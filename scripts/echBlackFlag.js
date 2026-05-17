@@ -140,8 +140,8 @@ export function initConfig() {
                         subtitle = CONFIG.BlackFlag.weaponTypes[item.system.weaponType];
                         property = CONFIG.BlackFlag.itemActionTypes[getActionType(item)];
                         if (property) properties.push(property);
-                        for (let [key, value] of item.system.properties /* BF: properties is array, not object */) {
-                            let prop = value && CONFIG.BlackFlag.weaponProperties[key] ? CONFIG.BlackFlag.weaponProperties[key] : undefined;
+                        for (const propName of item.system.properties) {
+                            let prop = CONFIG.BlackFlag.weaponProperties.includes(propName) ? game.i18n.localize(`BF.WEAPON.Property.${propName}`) : undefined;
                             if (prop) properties.push(prop);
                         }
                         break;
@@ -292,7 +292,7 @@ export function initConfig() {
                     const classes = Object.values(actor.classes)
                         .map((c) => c.name)
                         .join(" / ");
-                    return `Level ${system.details.level} ${classes} (${actor.system.details.lineage || actor.system.details.heritage /* BF: race->lineage */})`;
+                    return `Level ${system.details.level} ${classes} (${actor.system.details.lineage || actor.system.details.heritage})`;
                 } else {
                     return "";
                 }
@@ -303,7 +303,7 @@ export function initConfig() {
             }
 
             get isDying() {
-                return this.actor.system.attributes.hp /* BF: verify path */.value <= 0;
+                return this.actor.system.attributes.hp.value <= 0;
             }
 
             get successes() {
@@ -335,21 +335,21 @@ export function initConfig() {
                     .join("");
                 const SpellDC = game.i18n.localize("BF.SaveDC").replace("{ability}", "").replace("{dc}", "").trim();
 
-                const hpColor = this.actor.system.attributes.hp /* BF: verify path */.temp ? "#6698f3" : "rgb(0 255 170)";
-                const tempMax = this.actor.system.attributes.hp /* BF: verify path */.tempmax;
+                const hpColor = this.actor.system.attributes.hp.temp ? "#6698f3" : "rgb(0 255 170)";
+                const tempMax = this.actor.system.attributes.hp.tempmax;
                 const hpMaxColor = tempMax ? (tempMax > 0 ? "rgb(222 91 255)" : "#ffb000") : "rgb(255 255 255)";
 
                 return [
                     [
                         {
-                            text: `${this.actor.system.attributes.hp /* BF: verify path */.value + (this.actor.system.attributes.hp.temp ?? 0)}`,
+                            text: `${this.actor.system.attributes.hp.value + (this.actor.system.attributes.hp.temp ?? 0)}`,
                             color: hpColor,
                         },
                         {
                             text: `/`,
                         },
                         {
-                            text: `${this.actor.system.attributes.hp /* BF: verify path */.max + (this.actor.system.attributes.hp.tempmax ?? 0)}`,
+                            text: `${this.actor.system.attributes.hp.max + (this.actor.system.attributes.hp.tempmax ?? 0)}`,
                             color: hpMaxColor,
                         },
                         {
@@ -370,7 +370,7 @@ export function initConfig() {
                             text: SpellDC,
                         },
                         {
-                            text: this.actor.system.spellcasting.dc /* BF: attributes.spell.dc -> spellcasting.dc */,
+                            text: this.actor.system.spellcasting.dc,
                             color: "var(--ech-movement-baseMovement-background)",
                         },
                     ],
@@ -1012,7 +1012,7 @@ export function initConfig() {
                 const preparedFlag = this.actor.getFlag(MODULE_ID, "showPrepared");
                 if(preparedFlag === "auto") {
                     const classes = Object.keys(this.actor.classes);
-                    const requiresPreparation = ["cleric", "druid", "wizard"] /* BF: classes requiring spell preparation */.some((className) => classes.includes(className));
+                    const requiresPreparation = ["cleric", "druid", "wizard"].some((className) => classes.includes(className));
                     return requiresPreparation;
                 }
                 if (preparedFlag === "all") return false;
@@ -1047,7 +1047,7 @@ export function initConfig() {
                 
                 this.items = this.items.filter((item) => !itemsToIgnore.includes(item));
                 if (this.showPreparedOnly) {
-                    const allowIfNotPrepared = ["atwill" /* BF: verify */, "innate" /* BF: verify */, "pact" /* BF: verify */];
+                    const allowIfNotPrepared = ["atwill", "innate", "pact"];
                     this.items = this.items.filter((item) => {
                         if (allowIfNotPrepared.includes(item.system?.method)) return true;
                         if (item.system?.level == 0) return true;
@@ -1059,12 +1059,12 @@ export function initConfig() {
                     ...this.itemsWithSpells,
                     {
                         label: "BF.SpellPrepAtWill",
-                        buttons: this.items.filter((item) => item.system?.method === "atwill" /* BF: verify */).map((item) => new DND5eItemButton({ item })),
+                        buttons: this.items.filter((item) => item.system?.method === "atwill").map((item) => new DND5eItemButton({ item })),
                         uses: { max: Infinity, value: Infinity },
                     },
                     {
                         label: "BF.SpellPrepInnate",
-                        buttons: this.items.filter((item) => item.system?.method === "innate" /* BF: verify */).map((item) => new DND5eItemButton({ item })),
+                        buttons: this.items.filter((item) => item.system?.method === "innate").map((item) => new DND5eItemButton({ item })),
                         uses: { max: Infinity, value: Infinity },
                     },
                     {
@@ -1074,9 +1074,9 @@ export function initConfig() {
                     },
                     {
                         label: "BF.PactMagic",
-                        buttons: this.items.filter((item) => item.system?.method === "pact" /* BF: verify */).map((item) => new DND5eItemButton({ item })),
+                        buttons: this.items.filter((item) => item.system?.method === "pact").map((item) => new DND5eItemButton({ item })),
                         uses: () => {
-                            return this.actor.system.spellcasting.slots.pact /* BF: spells.pact -> spellcasting.slots.pact */;
+                            return this.actor.system.spellcasting.slots.pact;
                         },
                     },
                 ];
@@ -1087,7 +1087,7 @@ export function initConfig() {
                         label,
                         buttons: levelSpells.map((item) => new DND5eItemButton({ item })),
                         uses: () => {
-                            return this.actor.system.spellcasting.slots[level] /* BF: spells -> spellcasting.slots */;
+                            return this.actor.system.spellcasting.slots[level];
                         },
                     });
                 }
@@ -1299,7 +1299,7 @@ export function initConfig() {
         CoreHUD.defineButtonHud(DND5eButtonHud);
         CoreHUD.defineWeaponSets(DND5eWeaponSets);
         CoreHUD.defineTooltip(DND5eTooltip);
-        CoreHUD.defineSupportedActorTypes(["character", "npc"]);
+        CoreHUD.defineSupportedActorTypes(["pc", "npc"]);
     });
 }
 
