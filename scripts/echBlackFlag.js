@@ -137,8 +137,8 @@ export function initConfig() {
 
                 switch (itemType) {
                     case "weapon":
-                        subtitle = CONFIG.BlackFlag.weaponTypes[item.system.weaponType];
-                        property = CONFIG.BlackFlag.itemActionTypes[getActionType(item)];
+                        subtitle = CONFIG.BlackFlag.weaponTypes[item.system.type?.value];
+                        property = game.i18n.localize(`BF.ACTIVITY.Type.${getActionType(item)}`);
                         if (property) properties.push(property);
                         for (const propName of item.system.properties) {
                             let prop = CONFIG.BlackFlag.weaponProperties.includes(propName) ? game.i18n.localize(`BF.WEAPON.Property.${propName}`) : undefined;
@@ -156,13 +156,13 @@ export function initConfig() {
                         if (item.labels.materials) materialComponents = item.labels.materials;
                         break;
                     case "consumable":
-                        subtitle = CONFIG.BlackFlag.consumableCategories[item.system.consumableType];
-                        property = CONFIG.BlackFlag.itemActionTypes[getActionType(item)];
+                        subtitle = CONFIG.BlackFlag.consumableCategories[item.system.type?.base];
+                        property = game.i18n.localize(`BF.ACTIVITY.Type.${getActionType(item)}`);
                         if (property) properties.push(property);
                         break;
                     case "feat":
-                        subtitle = item.system.requirements;
-                        property = CONFIG.BlackFlag.itemActionTypes[getActionType(item)];
+                        subtitle = null;
+                        property = game.i18n.localize(`BF.ACTIVITY.Type.${getActionType(item)}`);
                         if (property) properties.push(property);
                         break;
                 }
@@ -286,13 +286,13 @@ export function initConfig() {
                 const isPC = type === "character";
                 if (isNPC) {
                     const creatureType = game.i18n.localize(CONFIG.BlackFlag.creatureTypes[actor.system.traits.type.value]?.label ?? actor.system.traits.type.custom);
-                    const cr = system.details.cr >= 1 || system.details.cr <= 0 ? system.details.cr : `1/${1 / system.details.cr}`;
+                    const cr = system.attributes.cr >= 1 || system.attributes.cr <= 0 ? system.attributes.cr : `1/${1 / system.attributes.cr}`;
                     return `CR ${cr} ${creatureType}`;
                 } else if (isPC) {
-                    const classes = Object.values(actor.classes)
-                        .map((c) => c.name)
+                    const classes = Object.values(actor.system.progression?.classes ?? {})
+                        .map((c) => c.document?.name ?? c.name ?? "")
                         .join(" / ");
-                    return `Level ${system.details.level} ${classes} (${actor.system.details.lineage || actor.system.details.heritage})`;
+                    return `Level ${system.progression?.levels?.length ?? 0} ${classes} (${this.actor.items.find(i => i.type === "lineage")?.name || this.actor.items.find(i => i.type === "heritage")?.name})`;
                 } else {
                     return "";
                 }
@@ -402,8 +402,8 @@ export function initConfig() {
 
             get categories() {
                 const abilities = this.actor.system.abilities;
-                const skills = this.actor.system.skills;
-                const tools = this.actor.system.tools;
+                const skills = this.actor.system.proficiencies?.skills ?? {};
+                const tools = this.actor.system.proficiencies?.tools ?? {};
 
                 const addSign = (value) => {
                     if (value >= 0) return `+${value}`;
@@ -437,11 +437,11 @@ export function initConfig() {
                     return new DND5eDrawerButton(
                         [
                             {
-                                label: getProficiencyIcon(skillData.proficient) + CONFIG.BlackFlag.skills[skill].label,
+                                label: getProficiencyIcon(skillData.proficiency.multiplier) + CONFIG.BlackFlag.skills[skill].label,
                                 onClick: (event) => this.actor.rollSkill({ skill, event }),
                             },
                             {
-                                label: `${addSign(skillData.total)}<span style="margin: 0 1rem; filter: brightness(0.8)">(${skillData.passive})</span>`,
+                                label: `${addSign(skillData.mod)}<span style="margin: 0 1rem; filter: brightness(0.8)">(${skillData.passive})</span>`,
                                 style: "display: flex; justify-content: flex-end;",
                             },
                         ],
@@ -451,8 +451,8 @@ export function initConfig() {
                 });
 
                 function getToolLabel(key) {
-                    if (key in CONFIG.BlackFlag.toolProficiencies) return CONFIG.BlackFlag.toolProficiencies[key];
-                    if (key in CONFIG.BlackFlag.vehicleTypes) return CONFIG.BlackFlag.vehicleTypes[key];
+                    if (key in CONFIG.BlackFlag.toolProficiencies) return game.i18n.localize(CONFIG.BlackFlag.tools[key]?.label);
+                    if (key in CONFIG.BlackFlag.vehicleTypes) return game.i18n.localize(CONFIG.BlackFlag.vehicles[key]?.label);
                     if (key in CONFIG.BlackFlag.tools) {
                         const item = CONFIG.BlackFlag.tools[key];
                         if (typeof item == "string") {
@@ -470,11 +470,11 @@ export function initConfig() {
                     return new DND5eDrawerButton(
                         [
                             {
-                                label: getProficiencyIcon(tool.prof.multiplier) + getToolLabel(key, tool),
-                                onClick: (event) => this.actor.rollToolCheck({tool: key})
+                                label: getProficiencyIcon(tool.proficiency.multiplier) + getToolLabel(key, tool),
+                                onClick: (event) => this.actor.rollTool({tool: key})
                             },
                             {
-                                label: addSign(tool.mod + tool.prof.multiplier * this.actor.system.attributes.prof),
+                                label: addSign(tool.mod + tool.proficiency.multiplier * this.actor.system.attributes.proficiency),
                             },
                         ],
                         tool,
@@ -732,11 +732,11 @@ export function initConfig() {
             }
 
             get maxActions() {
-                return this.actor?.inCombat ? this.actor.system.resources?.legact?.max ?? null : null;
+                return this.actor?.inCombat ? this.actor.system.attributes?.legendary?.max ?? null : null;
             }
 
             get currentActions() {
-                return this.actor.system.resources?.legact?.value ?? null;
+                return this.actor.system.attributes?.legendary?.value ?? null;
             }
 
             async _getButtons() {
@@ -1011,7 +1011,7 @@ export function initConfig() {
                 if (this.actor.type !== "character") return false;
                 const preparedFlag = this.actor.getFlag(MODULE_ID, "showPrepared");
                 if(preparedFlag === "auto") {
-                    const classes = Object.keys(this.actor.classes);
+                    const classes = Object.keys(this.actor.system.progression?.classes ?? {});
                     const requiresPreparation = ["cleric", "druid", "wizard"].some((className) => classes.includes(className));
                     return requiresPreparation;
                 }
@@ -1023,7 +1023,7 @@ export function initConfig() {
             prePrepareSpells() {
                 if (this.type !== "spell") return;
 
-                const spellLevels = CONFIG.BlackFlag.spellCircles;
+                const spellLevels = CONFIG.BlackFlag.spellCircles();
                 const itemsToIgnore = [];
                 const magicItems = new Map();
                 this.items.filter((item) => item.flags["black-flag"]?.cachedFor).forEach(is => {
@@ -1047,10 +1047,10 @@ export function initConfig() {
                 
                 this.items = this.items.filter((item) => !itemsToIgnore.includes(item));
                 if (this.showPreparedOnly) {
-                    const allowIfNotPrepared = ["atwill", "innate", "pact"];
+                    const allowIfNotPrepared = ["atWill", "innate", "pact"];
                     this.items = this.items.filter((item) => {
-                        if (allowIfNotPrepared.includes(item.system?.method)) return true;
-                        if (item.system?.level == 0) return true;
+                        if (allowIfNotPrepared.includes(item.getFlag('black-flag', 'relationship.mode'))) return true;
+                        if (item.system?.circle?.base == 0) return true;
                         return item.system?.prepared > 0;
                     });
                 }
@@ -1059,35 +1059,35 @@ export function initConfig() {
                     ...this.itemsWithSpells,
                     {
                         label: "BF.SpellPrepAtWill",
-                        buttons: this.items.filter((item) => item.system?.method === "atwill").map((item) => new DND5eItemButton({ item })),
+                        buttons: this.items.filter((item) => item.getFlag('black-flag', 'relationship.mode') === "atWill").map((item) => new DND5eItemButton({ item })),
                         uses: { max: Infinity, value: Infinity },
                     },
                     {
                         label: "BF.SpellPrepInnate",
-                        buttons: this.items.filter((item) => item.system?.method === "innate").map((item) => new DND5eItemButton({ item })),
+                        buttons: this.items.filter((item) => item.getFlag('black-flag', 'relationship.mode') === "innate").map((item) => new DND5eItemButton({ item })),
                         uses: { max: Infinity, value: Infinity },
                     },
                     {
                         label: Object.values(spellLevels)[0],
-                        buttons: this.items.filter((item) => item.system?.level == 0).map((item) => new DND5eItemButton({ item })),
+                        buttons: this.items.filter((item) => item.system?.circle?.base == 0).map((item) => new DND5eItemButton({ item })),
                         uses: { max: Infinity, value: Infinity },
                     },
                     {
                         label: "BF.PactMagic",
-                        buttons: this.items.filter((item) => item.system?.method === "pact").map((item) => new DND5eItemButton({ item })),
+                        buttons: this.items.filter((item) => item.getFlag('black-flag', 'relationship.mode') === "pact").map((item) => new DND5eItemButton({ item })),
                         uses: () => {
                             return this.actor.system.spellcasting.slots.pact;
                         },
                     },
                 ];
                 for (const [level, label] of Object.entries(spellLevels)) {
-                    const levelSpells = this.items.filter((item) => item.system?.level == level && item.system?.method === "spell");
+                    const levelSpells = this.items.filter((item) => item.system?.circle?.base == level && item.getFlag('black-flag', 'relationship.mode') === "spell");
                     if (!levelSpells.length || level == 0) continue;
                     spells.push({
                         label,
                         buttons: levelSpells.map((item) => new DND5eItemButton({ item })),
                         uses: () => {
-                            return this.actor.system.spellcasting.slots[level];
+                            return this.actor.system.spellcasting.slots[`circle-${level}`];
                         },
                     });
                 }
@@ -1168,7 +1168,7 @@ export function initConfig() {
                         alias: this.actor.name,
                     },
                     content: `
-                    <div class="dnd5e2 chat-card item-card" data-display-challenge="">
+                    <div class="chat-card item-card" data-display-challenge="">
 
     <section class="card-header description collapsible">
 
@@ -1200,8 +1200,8 @@ export function initConfig() {
         class DND5eMovementHud extends ARGON.MovementHud {
             get movementMax() {
                 if (!this.actor) return 0;
-                if (!this.actor.system.attributes.movement[this.movementMode]) return 0;
-                return this.actor.system.attributes.movement[this.movementMode] / canvas.scene.dimensions.distance;
+                if (!this.actor.system.traits.movement.types[this.movementMode]?.value ?? 0) return 0;
+                return this.actor.system.traits.movement.types[this.movementMode]?.value ?? 0 / canvas.scene.dimensions.distance;
             }
         }
 
@@ -1233,7 +1233,7 @@ export function initConfig() {
         class DND5eWeaponSets extends ARGON.WeaponSets {
             async getDefaultSets() {
                 const sets = await super.getDefaultSets();
-                const isTransformed = this.actor.flags?.dnd5e?.isPolymorphed;
+                const isTransformed = this.actor.flags?.["black-flag"]?.isPolymorphed;
                 if (this.actor.type !== "npc" && !isTransformed) return sets;
                 const actions = this.actor.items.filter((item) => item.type === "weapon" && getActivationType(item) === "action");
                 const bonus = this.actor.items.filter((item) => item.type === "weapon" && getActivationType(item) === "bonus");
@@ -1254,7 +1254,7 @@ export function initConfig() {
             }
 
             async _getSets() {
-                const isTransformed = this.actor.flags?.dnd5e?.isPolymorphed;
+                const isTransformed = this.actor.flags?.["black-flag"]?.isPolymorphed;
 
                 const sets = isTransformed ? await this.getDefaultSets() : foundry.utils.mergeObject(await this.getDefaultSets(), foundry.utils.deepClone(this.actor.getFlag("enhancedcombathud", "weaponSets") || {}));
 
