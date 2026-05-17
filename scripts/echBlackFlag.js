@@ -325,7 +325,7 @@ export function initConfig() {
                 this.actor.rollDeathSave({});
             }
 
-            async getStatBlocks() {
+            async getStatBlocks() { console.log("[BF] Portrait.getStatBlocks");
                 const HPText = game.i18n
                     .localize("BF.HitPoints")
                     .split(" ")
