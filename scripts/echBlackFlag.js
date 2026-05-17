@@ -290,8 +290,8 @@ export function initConfig() {
                 if (isNPC) {
                     const traitsType = actor.system.traits?.type;
                     const typeValue = traitsType?.value;
-                    const typeLabel = typeValue && CONFIG.BlackFlag.creatureTypes?.[typeValue]?.label;
-                    const creatureType = game.i18n.localize(typeLabel ?? traitsType?.custom ?? "Creature");
+                    const typeLabel = (typeValue && CONFIG.BlackFlag.creatureTypes?.[typeValue]?.label) || traitsType?.custom || typeValue || "Creature";
+                    const creatureType = typeof typeLabel === "string" ? typeLabel : "Creature";
                     const cr = system.attributes.cr >= 1 || system.attributes.cr <= 0 ? system.attributes.cr : `1/${1 / system.attributes.cr}`;
                     return `CR ${cr} ${creatureType}`;
                 } else if (isPC) {
@@ -329,17 +329,15 @@ export function initConfig() {
             }
 
             async getStatBlocks() { console.log("[BF] Portrait.getStatBlocks");
-                const HPText = game.i18n
-                    .localize("BF.HitPoints.Long")
+                const HPText = "Hit Points"
                     .split(" ")
                     .map((word) => word.charAt(0).toUpperCase())
                     .join("");
-                const ACText = game.i18n
-                    .localize("BF.ARMORCLASS")
+                const ACText = "Armor Class"
                     .split(" ")
                     .map((word) => word.charAt(0).toUpperCase())
                     .join("");
-                const SpellDC = game.i18n.localize("BF.SAVE.DC.Label").replace("{ability}", "").replace("{dc}", "").trim();
+                const SpellDC = `Spell Save DC`;
 
                 const hpColor = this.actor.system.attributes.hp.temp ? "#6698f3" : "rgb(0 255 170)";
                 const tempMax = this.actor.system.attributes.hp.tempmax;
@@ -498,15 +496,15 @@ export function initConfig() {
                         gridCols: "5fr 2fr 2fr",
                         captions: [
                             {
-                                label: game.i18n.localize("BF.Ability.Label[other]"),
+                                label: "Abilities",
                                 align: "left",
                             },
                             {
-                                label: game.i18n.localize("BF.CHECK.Label"),
+                                label: "Check",
                                 align: "center",
                             },
                             {
-                                label: game.i18n.localize("BF.SAVE.Label"),
+                                label: "Save",
                                 align: "center",
                             },
                         ],
@@ -517,7 +515,7 @@ export function initConfig() {
                         gridCols: "7fr 2fr",
                         captions: [
                             {
-                                label: game.i18n.localize("BF.Skill.Label[other]"),
+                                label: "Skills",
                             },
                             {
                                 label: "",
@@ -551,7 +549,7 @@ export function initConfig() {
             }
 
             get label() {
-                return game.i18n.localize("BF.ACTIVITY.Action[one]");
+                return "Action";
             }
 
             get maxActions() {
@@ -597,7 +595,7 @@ export function initConfig() {
             }
 
             get label() {
-                return game.i18n.localize("BF.ACTIVITY.BonusAction[one]");
+                return "Bonus Action";
             }
 
             get maxActions() {
@@ -644,7 +642,7 @@ export function initConfig() {
             }
 
             get label() {
-                return game.i18n.localize("BF.ACTIVITY.Reaction[one]");
+                return "Reaction";
             }
 
             get maxActions() {
@@ -692,7 +690,7 @@ export function initConfig() {
             }
 
             get label() {
-                return game.i18n.localize("BF.ACTIVITY.FreeAction[one]");
+                return "Free Action";
             }
 
             get maxActions() {
@@ -740,7 +738,7 @@ export function initConfig() {
             }
 
             get label() {
-                return game.i18n.localize("BF.ACTIVITY.Legendary[one]");
+                return "Legendary Action";
             }
 
             get maxActions() {
@@ -767,7 +765,7 @@ export function initConfig() {
             }
 
             get label() {
-                return game.i18n.localize("BF.ACTIVITY.Lair[one]");
+                return "Lair Action";
             }
 
             get maxActions() {
@@ -794,7 +792,7 @@ export function initConfig() {
             }
 
             get label() {
-                return game.i18n.localize("BF.ACTIVITY.Legendary[one]");
+                return "Legendary Action";
             }
 
             get maxActions() {
@@ -1070,12 +1068,12 @@ export function initConfig() {
                 const spells = [
                     ...this.itemsWithSpells,
                     {
-                        label: game.i18n.localize("BF.PREPARATION.MODE.AtWill"),
+                        label: "At-Will",
                         buttons: this.items.filter((item) => item.getFlag('black-flag', 'relationship.mode') === "atWill").map((item) => new DND5eItemButton({ item })),
                         uses: { max: Infinity, value: Infinity },
                     },
                     {
-                        label: game.i18n.localize("BF.PREPARATION.MODE.Innate"),
+                        label: "Innate",
                         buttons: this.items.filter((item) => item.getFlag('black-flag', 'relationship.mode') === "innate").map((item) => new DND5eItemButton({ item })),
                         uses: { max: Infinity, value: Infinity },
                     },
@@ -1085,7 +1083,7 @@ export function initConfig() {
                         uses: { max: Infinity, value: Infinity },
                     },
                     {
-                        label: game.i18n.localize("BF.SPELLCASTING.Type.PactMagic"),
+                        label: "Pact Magic",
                         buttons: this.items.filter((item) => item.getFlag('black-flag', 'relationship.mode') === "pact").map((item) => new DND5eItemButton({ item })),
                         uses: () => {
                             return this.actor.system.spellcasting.slots.pact;
@@ -1225,12 +1223,12 @@ export function initConfig() {
             async _getButtons() {
                 return [
                     {
-                        label: game.i18n.localize("BF.ACTIVITY.LongRest"),
+                        label: "Long Rest",
                         onClick: (event) => this.actor.longRest(),
                         icon: "fas fa-bed",
                     },
                     {
-                        label: game.i18n.localize("BF.ACTIVITY.ShortRest"),
+                        label: "Short Rest",
                         onClick: (event) => this.actor.shortRest(),
                         icon: "fas fa-coffee",
                     },
