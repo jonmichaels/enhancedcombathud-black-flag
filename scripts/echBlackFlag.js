@@ -9,13 +9,15 @@ export function setExplodeItemActivities() {
 }
 
 export function initConfig() {
+    console.log("[Argon-BF] initConfig started");
 
     Hooks.on("updateItem", (item) => {
         if(item.parent === ui.ARGON._actor && ui.ARGON.rendered) ui.ARGON.components.portrait.refresh()
     })
 
     Hooks.on("argonInit", (CoreHUD) => {
-        if (game.system.id !== "black-flag") return;
+        console.log("[Argon-BF] argonInit handler started");
+        if (game.system.id !== "black-flag") return console.log("[Argon-BF] Wrong system, exiting. System is:", game.system.id);
         registerItems();
         setExplodeItemActivities();
         const ARGON = CoreHUD.ARGON;
@@ -276,6 +278,7 @@ export function initConfig() {
 
         class DND5ePortraitPanel extends ARGON.PORTRAIT.PortraitPanel {
             constructor(...args) {
+                console.log("[Argon-BF] Portrait constructor, actor type:", args[0]?.actor?.type || "unknown");
                 super(...args);
             }
 
@@ -1292,14 +1295,22 @@ export function initConfig() {
         if (enableMacroPanel) mainPanels.push(ARGON.PREFAB.MacroPanel);
         mainPanels.push(ARGON.PREFAB.PassTurnPanel);
 
+        console.log("[Argon-BF] Defining portrait panel...");
         CoreHUD.definePortraitPanel(DND5ePortraitPanel);
+        console.log("[Argon-BF] Portrait panel defined");
+        console.log("[Argon-BF] Defining drawer panel...");
         CoreHUD.defineDrawerPanel(DND5eDrawerPanel);
+        console.log("[Argon-BF] Drawer panel defined");
+        console.log("[Argon-BF] Defining main panels:", mainPanels.length, "panels");
         CoreHUD.defineMainPanels(mainPanels);
+        console.log("[Argon-BF] Main panels defined");
         CoreHUD.defineMovementHud(DND5eMovementHud);
         CoreHUD.defineButtonHud(DND5eButtonHud);
         CoreHUD.defineWeaponSets(DND5eWeaponSets);
         CoreHUD.defineTooltip(DND5eTooltip);
+        console.log("[Argon-BF] Defining supported actor types: pc, npc");
         CoreHUD.defineSupportedActorTypes(["pc", "npc"]);
+        console.log("[Argon-BF] argonInit handler COMPLETED successfully");
     });
 }
 
