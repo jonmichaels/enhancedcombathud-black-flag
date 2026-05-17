@@ -12,9 +12,9 @@ Ported from the [D&D 5E plugin](https://github.com/theripper93/enhancedcombathud
 
 ## Development
 
-Developed in `~/projects/enhancedcombathud-blackflag/` with a symlink into Foundry userdata for live testing.
+Developed in `~/projects/enhancedcombathud-black-flag/` with a symlink into Foundry userdata for live testing.
 
 ```bash
-cd ~/projects/enhancedcombathud-blackflag
-# symlink: ~/foundryuserdata/Data/modules/enhancedcombathud-blackflag -> ~/projects/enhancedcombathud-blackflag
+cd ~/projects/enhancedcombathud-black-flag
+# symlink: ~/foundryuserdata/Data/modules/enhancedcombathud-black-flag -> ~/projects/enhancedcombathud-black-flag
 ```
