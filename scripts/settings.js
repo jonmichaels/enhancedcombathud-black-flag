@@ -9,7 +9,7 @@ export function registerSettings() {
             scope: "world",
             config: true,
             type: Boolean,
-            default: false,
+            default: true,
             onChange: (sett) => {
                 ui.ARGON.constructor.BlackFlag.itemTypes.consumable = ui.ARGON.constructor.BlackFlag.itemTypes.consumable.filter(i => i !== "weapon");
                 if(sett) ui.ARGON.constructor.BlackFlag.itemTypes.consumable.push("weapon");
