@@ -118,10 +118,10 @@ export function initConfig() {
             let materialComponents = "";
 
             if (type == "skill") {
-                title = CONFIG.BlackFlag.skills[item].label;
+                title = CONFIG.BlackFlag.skills.localized[item];
                 description = game.i18n.localize(`enhancedcombathud-black-flag.skills.${item}.tooltip`);
             } else if (type == "save") {
-                title = CONFIG.BlackFlag.abilities[item].label;
+                title = CONFIG.BlackFlag.abilities.localized[item];
                 description = game.i18n.localize(`enhancedcombathud-black-flag.abilities.${item}.tooltip`);
             } else {
                 if (!item || !item.system) return;
@@ -139,7 +139,7 @@ export function initConfig() {
 
                 switch (itemType) {
                     case "weapon":
-                        subtitle = CONFIG.BlackFlag.weaponTypes[item.system.type?.value];
+                        subtitle = CONFIG.BlackFlag.weaponTypes.localized[item.system.type?.value];
                         property = game.i18n.localize(`BF.ACTIVITY.Type.${getActionType(item)}`);
                         if (property) properties.push(property);
                         for (const propName of item.system.properties) {
@@ -149,7 +149,7 @@ export function initConfig() {
                         break;
                     case "spell":
                         subtitle = `${item.labels?.level ?? "?"} ${item.labels?.school ?? "?"}`;
-                        properties.push(CONFIG.BlackFlag.spellSchools[item.system.school]);
+                        properties.push(CONFIG.BlackFlag.spellSchools.localized[item.system.school]);
                         if (item.labels?.duration) properties.push(item.labels.duration);
                         if (item.labels?.save) properties.push(item.labels.save);
                         for (let comp of (item.labels?.components?.all ?? [])) {
@@ -158,7 +158,7 @@ export function initConfig() {
                         if (item.labels?.materials) materialComponents = item.labels.materials;
                         break;
                     case "consumable":
-                        subtitle = CONFIG.BlackFlag.consumableCategories[item.system.type?.base];
+                        subtitle = CONFIG.BlackFlag.consumableCategories.localized[item.system.type?.base];
                         property = game.i18n.localize(`BF.ACTIVITY.Type.${getActionType(item)}`);
                         if (property) properties.push(property);
                         break;
@@ -419,7 +419,7 @@ export function initConfig() {
                     return new DND5eDrawerButton(
                         [
                             {
-                                label: CONFIG.BlackFlag.abilities[ability].label,
+                                label: CONFIG.BlackFlag.abilities.localized[ability],
                                 onClick: (event) => this.actor.rollAbilityCheck({ ability, event }),
                             },
                             {
@@ -441,7 +441,7 @@ export function initConfig() {
                     return new DND5eDrawerButton(
                         [
                             {
-                                label: getProficiencyIcon(skillData.proficiency.multiplier) + CONFIG.BlackFlag.skills[skill].label,
+                                label: getProficiencyIcon(skillData.proficiency.multiplier) + CONFIG.BlackFlag.skills.localized[skill],
                                 onClick: (event) => this.actor.rollSkill({ skill, event }),
                             },
                             {
@@ -484,7 +484,7 @@ export function initConfig() {
                                 onClick: (event) => this.actor.rollTool({tool: key})
                             },
                             {
-                                label: addSign(tool.mod + tool.proficiency.multiplier * this.actor.system.attributes.proficiencyiciency),
+                                label: addSign(tool.mod + tool.proficiency.multiplier * this.actor.system.attributes.proficiency),
                             },
                         ],
                         tool,
