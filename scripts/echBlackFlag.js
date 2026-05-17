@@ -94,7 +94,7 @@ export function initConfig() {
         const itemTypes = {
             spell: ["spell"],
             feature: ["feature", "talent"],
-            consumable: ["consumable", "equipment", "loot"],
+            consumable: ["consumable", "gear", "sundry", "container", "tool"],
         };
 
         const mainBarFeatures = [];
@@ -288,7 +288,10 @@ export function initConfig() {
                 const isNPC = type === "npc";
                 const isPC = type === "pc";
                 if (isNPC) {
-                    const creatureType = game.i18n.localize(CONFIG.BlackFlag.creatureTypes[actor.system.traits.type.value]?.label ?? actor.system.traits.type.custom);
+                    const traitsType = actor.system.traits?.type;
+                    const typeValue = traitsType?.value;
+                    const typeLabel = typeValue && CONFIG.BlackFlag.creatureTypes?.[typeValue]?.label;
+                    const creatureType = game.i18n.localize(typeLabel ?? traitsType?.custom ?? "Creature");
                     const cr = system.attributes.cr >= 1 || system.attributes.cr <= 0 ? system.attributes.cr : `1/${1 / system.attributes.cr}`;
                     return `CR ${cr} ${creatureType}`;
                 } else if (isPC) {
@@ -327,16 +330,16 @@ export function initConfig() {
 
             async getStatBlocks() { console.log("[BF] Portrait.getStatBlocks");
                 const HPText = game.i18n
-                    .localize("BF.HitPoints")
+                    .localize("BF.HitPoints.Long")
                     .split(" ")
                     .map((word) => word.charAt(0).toUpperCase())
                     .join("");
                 const ACText = game.i18n
-                    .localize("BF.ArmorClass")
+                    .localize("BF.ARMORCLASS")
                     .split(" ")
                     .map((word) => word.charAt(0).toUpperCase())
                     .join("");
-                const SpellDC = game.i18n.localize("BF.SaveDC").replace("{ability}", "").replace("{dc}", "").trim();
+                const SpellDC = game.i18n.localize("BF.SAVE.DC.Label").replace("{ability}", "").replace("{dc}", "").trim();
 
                 const hpColor = this.actor.system.attributes.hp.temp ? "#6698f3" : "rgb(0 255 170)";
                 const tempMax = this.actor.system.attributes.hp.tempmax;
@@ -454,10 +457,10 @@ export function initConfig() {
                 });
 
                 function getToolLabel(key) {
-                    if (key in CONFIG.BlackFlag.toolProficiencies) return game.i18n.localize(CONFIG.BlackFlag.tools[key]?.label);
-                    if (key in CONFIG.BlackFlag.vehicleTypes) return game.i18n.localize(CONFIG.BlackFlag.vehicles[key]?.label);
-                    if (key in CONFIG.BlackFlag.tools) {
-                        const item = CONFIG.BlackFlag.tools[key];
+                    // Black Flag uses tools/toolTypes configs — check safely
+                    const toolCfg = CONFIG.BlackFlag.tools;
+                    if (toolCfg && key in toolCfg) {
+                        const item = toolCfg[key];
                         if (typeof item == "string") {
                             const name = fromUuidSync(item)?.name;
                             if (name) return name;
@@ -465,6 +468,12 @@ export function initConfig() {
                         }
                         const name = fromUuidSync(item?.id)?.name;
                         if (name) return name;
+                        return item?.label ? game.i18n.localize(item.label) : key;
+                    }
+                    // Check toolTypes if available
+                    const toolTypes = CONFIG.BlackFlag.toolTypes;
+                    if (toolTypes && key in toolTypes) {
+                        return game.i18n.localize(toolTypes[key]?.label ?? key);
                     }
                     return key.charAt(0).toUpperCase() + key.slice(1);
                 }
@@ -489,15 +498,15 @@ export function initConfig() {
                         gridCols: "5fr 2fr 2fr",
                         captions: [
                             {
-                                label: game.i18n.localize("BF.Abilities"),
+                                label: game.i18n.localize("BF.Ability.Label[other]"),
                                 align: "left",
                             },
                             {
-                                label: game.i18n.localize("BF.CHECK.Title"),
+                                label: game.i18n.localize("BF.CHECK.Label"),
                                 align: "center",
                             },
                             {
-                                label: game.i18n.localize("BF.SAVE.Title.one"),
+                                label: game.i18n.localize("BF.SAVE.Label"),
                                 align: "center",
                             },
                         ],
@@ -508,7 +517,7 @@ export function initConfig() {
                         gridCols: "7fr 2fr",
                         captions: [
                             {
-                                label: game.i18n.localize("BF.Skills"),
+                                label: game.i18n.localize("BF.Skill.Label[other]"),
                             },
                             {
                                 label: "",
@@ -542,7 +551,7 @@ export function initConfig() {
             }
 
             get label() {
-                return "BF.Action";
+                return game.i18n.localize("BF.ACTIVITY.Action[one]");
             }
 
             get maxActions() {
@@ -588,7 +597,7 @@ export function initConfig() {
             }
 
             get label() {
-                return "BF.BonusAction";
+                return game.i18n.localize("BF.ACTIVITY.BonusAction[one]");
             }
 
             get maxActions() {
@@ -635,7 +644,7 @@ export function initConfig() {
             }
 
             get label() {
-                return "BF.Reaction";
+                return game.i18n.localize("BF.ACTIVITY.Reaction[one]");
             }
 
             get maxActions() {
@@ -683,7 +692,7 @@ export function initConfig() {
             }
 
             get label() {
-                return "BF.Special";
+                return game.i18n.localize("BF.ACTIVITY.FreeAction[one]");
             }
 
             get maxActions() {
@@ -731,7 +740,7 @@ export function initConfig() {
             }
 
             get label() {
-                return "BF.LegendaryAction.Label";
+                return game.i18n.localize("BF.ACTIVITY.Legendary[one]");
             }
 
             get maxActions() {
@@ -758,7 +767,7 @@ export function initConfig() {
             }
 
             get label() {
-                return "BF.LAIR.Action.Label";
+                return game.i18n.localize("BF.ACTIVITY.Lair[one]");
             }
 
             get maxActions() {
@@ -785,7 +794,7 @@ export function initConfig() {
             }
 
             get label() {
-                return "BF.MythicActionLabel";
+                return game.i18n.localize("BF.ACTIVITY.Legendary[one]");
             }
 
             get maxActions() {
@@ -1061,12 +1070,12 @@ export function initConfig() {
                 const spells = [
                     ...this.itemsWithSpells,
                     {
-                        label: "BF.SpellPrepAtWill",
+                        label: game.i18n.localize("BF.PREPARATION.MODE.AtWill"),
                         buttons: this.items.filter((item) => item.getFlag('black-flag', 'relationship.mode') === "atWill").map((item) => new DND5eItemButton({ item })),
                         uses: { max: Infinity, value: Infinity },
                     },
                     {
-                        label: "BF.SpellPrepInnate",
+                        label: game.i18n.localize("BF.PREPARATION.MODE.Innate"),
                         buttons: this.items.filter((item) => item.getFlag('black-flag', 'relationship.mode') === "innate").map((item) => new DND5eItemButton({ item })),
                         uses: { max: Infinity, value: Infinity },
                     },
@@ -1076,7 +1085,7 @@ export function initConfig() {
                         uses: { max: Infinity, value: Infinity },
                     },
                     {
-                        label: "BF.PactMagic",
+                        label: game.i18n.localize("BF.SPELLCASTING.Type.PactMagic"),
                         buttons: this.items.filter((item) => item.getFlag('black-flag', 'relationship.mode') === "pact").map((item) => new DND5eItemButton({ item })),
                         uses: () => {
                             return this.actor.system.spellcasting.slots.pact;
@@ -1216,12 +1225,12 @@ export function initConfig() {
             async _getButtons() {
                 return [
                     {
-                        label: "BF.REST.Long.Label",
+                        label: game.i18n.localize("BF.ACTIVITY.LongRest"),
                         onClick: (event) => this.actor.longRest(),
                         icon: "fas fa-bed",
                     },
                     {
-                        label: "BF.REST.Short.Label",
+                        label: game.i18n.localize("BF.ACTIVITY.ShortRest"),
                         onClick: (event) => this.actor.shortRest(),
                         icon: "fas fa-coffee",
                     },
