@@ -119,10 +119,12 @@ export function initConfig() {
 
             if (type == "skill") {
                 title = CONFIG.BlackFlag.skills.localized[item];
-                description = game.i18n.localize(`enhancedcombathud-black-flag.skills.${item}.tooltip`);
+                const key = `enhancedcombathud-black-flag.skills.${item}.tooltip`;
+                description = game.i18n.has(key) ? game.i18n.localize(key) : "";
             } else if (type == "save") {
                 title = CONFIG.BlackFlag.abilities.localized[item];
-                description = game.i18n.localize(`enhancedcombathud-black-flag.abilities.${item}.tooltip`);
+                const key = `enhancedcombathud-black-flag.abilities.${item}.tooltip`;
+                description = game.i18n.has(key) ? game.i18n.localize(key) : "";
             } else {
                 if (!item || !item.system) return;
 
@@ -427,7 +429,7 @@ export function initConfig() {
                                 onClick: (event) => this.actor.rollAbilityCheck({ ability, event }),
                             },
                             {
-                                label: addSign(abilityData.save.value),
+                                label: addSign(abilityData.mod + (abilityData.save?.proficiency?.flat ?? 0)),
                                 onClick: (event) => this.actor.rollSavingThrow({ ability, event }),
                             },
                         ],
