@@ -146,14 +146,14 @@ export function initConfig() {
                         }
                         break;
                     case "spell":
-                        subtitle = `${item.labels.level} ${item.labels.school}`;
+                        subtitle = `${item.labels?.level ?? "?"} ${item.labels?.school ?? "?"}`;
                         properties.push(CONFIG.BlackFlag.spellSchools[item.system.school]);
-                        properties.push(item.labels.duration);
-                        properties.push(item.labels.save);
-                        for (let comp of item.labels.components.all) {
+                        if (item.labels?.duration) properties.push(item.labels.duration);
+                        if (item.labels?.save) properties.push(item.labels.save);
+                        for (let comp of (item.labels?.components?.all ?? [])) {
                             properties.push(comp.abbr);
                         }
-                        if (item.labels.materials) materialComponents = item.labels.materials;
+                        if (item.labels?.materials) materialComponents = item.labels.materials;
                         break;
                     case "consumable":
                         subtitle = CONFIG.BlackFlag.consumableCategories[item.system.type?.base];
@@ -185,12 +185,12 @@ export function initConfig() {
             if (item?.labels?.toHit) {
                 details.push({
                     label: "enhancedcombathud-black-flag.tooltip.toHit.name",
-                    value: item.labels.toHit,
+                    value: item.labels?.toHit ?? "-",
                 });
             }
             if (item?.labels?.damages?.length) {
                 let dmgString = "";
-                item.labels.damages.forEach((dDmg) => {
+                (item.labels?.damages ?? []).forEach((dDmg) => {
                     dmgString += dDmg.formula + " " + getDamageTypeIcon(dDmg.damageType) + " ";
                 });
                 details.push({
@@ -441,7 +441,7 @@ export function initConfig() {
                                 onClick: (event) => this.actor.rollSkill({ skill, event }),
                             },
                             {
-                                label: `${addSign(skillData.mod)}<span style="margin: 0 1rem; filter: brightness(0.8)">(${skillData.passive})</span>`,
+                                label: `${addSign(skillData.mod)}<span style="margin: 0 1rem; filter: brightness(0.8)">(${skillData.passive ?? 0})</span>`,
                                 style: "display: flex; justify-content: flex-end;",
                             },
                         ],
@@ -474,7 +474,7 @@ export function initConfig() {
                                 onClick: (event) => this.actor.rollTool({tool: key})
                             },
                             {
-                                label: addSign(tool.mod + tool.proficiency.multiplier * this.actor.system.attributes.proficiency),
+                                label: addSign(tool.mod + tool.proficiency.multiplier * this.actor.system.attributes.proficiencyiciency),
                             },
                         ],
                         tool,
@@ -763,7 +763,7 @@ export function initConfig() {
             }
 
             get currentActions() {
-                return this.actor.system.resources.lair?.value * 1;
+                return this.actor.system.attributes?.lair?.value ?? 0 * 1;
             }
 
             async _getButtons() {
@@ -1023,7 +1023,7 @@ export function initConfig() {
             prePrepareSpells() {
                 if (this.type !== "spell") return;
 
-                const spellLevels = CONFIG.BlackFlag.spellCircles();
+                const spellLevels = CONFIG.BlackFlag.spellCircles()();
                 const itemsToIgnore = [];
                 const magicItems = new Map();
                 this.items.filter((item) => item.flags["black-flag"]?.cachedFor).forEach(is => {
