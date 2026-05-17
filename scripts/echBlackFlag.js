@@ -161,12 +161,24 @@ export function initConfig() {
                         break;
                     case "consumable":
                         subtitle = CONFIG.BlackFlag.consumableCategories.localized[item.system.type?.base];
-                        property = game.i18n.localize(`BF.ACTIVITY.Type.${getActionType(item)}`);
+                        {
+                            const actionType = getActionType(item);
+                            if (actionType) {
+                                const key = `BF.ACTIVITY.Type.${actionType}`;
+                                property = game.i18n.has(key) ? game.i18n.localize(key) : actionType;
+                            }
+                        }
                         if (property) properties.push(property);
                         break;
                     case "feature":
                         subtitle = null;
-                        property = game.i18n.localize(`BF.ACTIVITY.Type.${getActionType(item)}`);
+                        {
+                            const actionType = getActionType(item);
+                            if (actionType) {
+                                const key = `BF.ACTIVITY.Type.${actionType}`;
+                                property = game.i18n.has(key) ? game.i18n.localize(key) : actionType;
+                            }
+                        }
                         if (property) properties.push(property);
                         break;
                 }
