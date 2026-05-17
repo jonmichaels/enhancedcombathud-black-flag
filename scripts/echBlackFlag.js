@@ -283,7 +283,7 @@ export function initConfig() {
                 const { type, system } = this.actor;
                 const actor = this.actor;
                 const isNPC = type === "npc";
-                const isPC = type === "character";
+                const isPC = type === "pc";
                 if (isNPC) {
                     const creatureType = game.i18n.localize(CONFIG.BlackFlag.creatureTypes[actor.system.traits.type.value]?.label ?? actor.system.traits.type.custom);
                     const cr = system.attributes.cr >= 1 || system.attributes.cr <= 0 ? system.attributes.cr : `1/${1 / system.attributes.cr}`;
@@ -299,7 +299,7 @@ export function initConfig() {
             }
 
             get isDead() {
-                return this.isDying && this.actor.type !== "character";
+                return this.isDying && this.actor.type !== "pc";
             }
 
             get isDying() {
@@ -1008,7 +1008,7 @@ export function initConfig() {
             }
 
             get showPreparedOnly() {
-                if (this.actor.type !== "character") return false;
+                if (this.actor.type !== "pc") return false;
                 const preparedFlag = this.actor.getFlag(MODULE_ID, "showPrepared");
                 if(preparedFlag === "auto") {
                     const classes = Object.keys(this.actor.system.progression?.classes ?? {});
@@ -1023,7 +1023,7 @@ export function initConfig() {
             prePrepareSpells() {
                 if (this.type !== "spell") return;
 
-                const spellLevels = CONFIG.BlackFlag.spellCircles()();
+                const spellLevels = CONFIG.BlackFlag.spellCircles();
                 const itemsToIgnore = [];
                 const magicItems = new Map();
                 this.items.filter((item) => item.flags["black-flag"]?.cachedFor).forEach(is => {
