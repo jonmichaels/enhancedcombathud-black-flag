@@ -93,7 +93,7 @@ export function initConfig() {
 
         const itemTypes = {
             spell: ["spell"],
-            feat: ["feat"],
+            feature: ["feature", "talent"],
             consumable: ["consumable", "equipment", "loot"],
         };
 
@@ -162,7 +162,7 @@ export function initConfig() {
                         property = game.i18n.localize(`BF.ACTIVITY.Type.${getActionType(item)}`);
                         if (property) properties.push(property);
                         break;
-                    case "feat":
+                    case "feature":
                         subtitle = null;
                         property = game.i18n.localize(`BF.ACTIVITY.Type.${getActionType(item)}`);
                         if (property) properties.push(property);
@@ -560,7 +560,7 @@ export function initConfig() {
 
             async _getButtons() {
                 const spellItems = this.actor.items.filter((item) => itemTypes.spell.includes(item.type) && actionTypes.action.includes(getActivationType(item)) && !CoreHUD.BlackFlag.mainBarFeatures.includes(item.system.type?.value));
-                const featItems = expandActivities(this.actor.items.filter((item) => itemTypes.feat.includes(item.type) && checkActivationType(item, actionTypes.action) && !CoreHUD.BlackFlag.mainBarFeatures.includes(item.system.type?.value)), actionTypes.action);
+                const featureItems = expandActivities(this.actor.items.filter((item) => itemTypes.feature.includes(item.type) && checkActivationType(item, actionTypes.action) && !CoreHUD.BlackFlag.mainBarFeatures.includes(item.system.type?.value)), actionTypes.action);
                 const consumableItems = expandActivities(this.actor.items.filter((item) => itemTypes.consumable.includes(item.type) && checkActivationType(item, actionTypes.action) && !CoreHUD.BlackFlag.mainBarFeatures.includes(item.system.type?.value)), actionTypes.action);
 
                 const spellButton = !spellItems.length ? [] : [new DND5eButtonPanelButton({ type: "spell", items: spellItems, color: 0 })].filter((button) => button.hasContents);
@@ -570,9 +570,9 @@ export function initConfig() {
                 const showSpecialActions = game.settings.get(MODULE_ID, "showSpecialActions");
                 const buttons = [];
                 if (showSpecialActions) {
-                    buttons.push(...[new DND5eItemButton({ item: null, isWeaponSet: true, isPrimary: true }), new ARGON.MAIN.BUTTONS.SplitButton(new DND5eSpecialActionButton(specialActions[0]), new DND5eSpecialActionButton(specialActions[1])), ...spellButton, new DND5eButtonPanelButton({ type: "feat", items: featItems, color: 0 }), new ARGON.MAIN.BUTTONS.SplitButton(new DND5eSpecialActionButton(specialActions[2]), new DND5eSpecialActionButton(specialActions[3])), new ARGON.MAIN.BUTTONS.SplitButton(new DND5eSpecialActionButton(specialActions[4]), new DND5eSpecialActionButton(specialActions[5])), new DND5eButtonPanelButton({ type: "consumable", items: consumableItems, color: 0 })]);
+                    buttons.push(...[new DND5eItemButton({ item: null, isWeaponSet: true, isPrimary: true }), new ARGON.MAIN.BUTTONS.SplitButton(new DND5eSpecialActionButton(specialActions[0]), new DND5eSpecialActionButton(specialActions[1])), ...spellButton, new DND5eButtonPanelButton({ type: "feature", items: featureItems, color: 0 }), new ARGON.MAIN.BUTTONS.SplitButton(new DND5eSpecialActionButton(specialActions[2]), new DND5eSpecialActionButton(specialActions[3])), new ARGON.MAIN.BUTTONS.SplitButton(new DND5eSpecialActionButton(specialActions[4]), new DND5eSpecialActionButton(specialActions[5])), new DND5eButtonPanelButton({ type: "consumable", items: consumableItems, color: 0 })]);
                 } else {
-                    buttons.push(...[new DND5eItemButton({ item: null, isWeaponSet: true, isPrimary: true }), ...spellButton, new DND5eButtonPanelButton({ type: "feat", items: featItems, color: 0 }), new DND5eButtonPanelButton({ type: "consumable", items: consumableItems, color: 0 })]);
+                    buttons.push(...[new DND5eItemButton({ item: null, isWeaponSet: true, isPrimary: true }), ...spellButton, new DND5eButtonPanelButton({ type: "feature", items: featureItems, color: 0 }), new DND5eButtonPanelButton({ type: "consumable", items: consumableItems, color: 0 })]);
                 }
 
                 const barItems = this.actor.items.filter((item) => CoreHUD.BlackFlag.mainBarFeatures.includes(item.system.type?.value) && checkActivationType(item, actionTypes.action));
@@ -988,7 +988,7 @@ export function initConfig() {
                 switch (this.type) {
                     case "spell":
                         return "enhancedcombathud-black-flag.hud.castspell.name";
-                    case "feat":
+                    case "feature":
                         return "enhancedcombathud-black-flag.hud.usepower.name";
                     case "consumable":
                         return "enhancedcombathud-black-flag.hud.useitem.name";
@@ -1001,7 +1001,7 @@ export function initConfig() {
                 switch (this.type) {
                     case "spell":
                         return "modules/enhancedcombathud/icons/spell-book.webp";
-                    case "feat":
+                    case "feature":
                         return "modules/enhancedcombathud/icons/mighty-force.webp";
                     case "consumable":
                         return "modules/enhancedcombathud/icons/drink-me.webp";
@@ -1112,11 +1112,7 @@ export function initConfig() {
                 const actorItem = this.actor.items.getName(specialItem.name);
                 this.actorItem = actorItem;
                 this.statusId = specialItem.flags?.statusId?.id;
-                this.item =
-                    actorItem ??
-                    new CONFIG.Item.documentClass(specialItem, {
-                        parent: this.actor,
-                    });
+                this.item = actorItem ?? specialItem;
             }
 
             get label() {
@@ -1317,7 +1313,7 @@ export function initConfig() {
 function registerItems() {
     ECHItems[game.i18n.localize("enhancedcombathud-black-flag.items.disengage.name")] = {
         name: game.i18n.localize("enhancedcombathud-black-flag.items.disengage.name"),
-        type: "feat",
+        type: "feature",
         img: "modules/enhancedcombathud/icons/journey.webp",
         system: {
             type: {
@@ -1392,7 +1388,7 @@ function registerItems() {
     };
     ECHItems[game.i18n.localize("enhancedcombathud-black-flag.items.dodge.name")] = {
         name: game.i18n.localize("enhancedcombathud-black-flag.items.dodge.name"),
-        type: "feat",
+        type: "feature",
         img: "modules/enhancedcombathud/icons/armor-upgrade.webp",
         system: {
             type: {
@@ -1468,7 +1464,7 @@ function registerItems() {
     };
     ECHItems[game.i18n.localize("enhancedcombathud-black-flag.items.ready.name")] = {
         name: game.i18n.localize("enhancedcombathud-black-flag.items.ready.name"),
-        type: "feat",
+        type: "feature",
         img: "modules/enhancedcombathud/icons/clockwork.webp",
         system: {
             type: {
@@ -1541,7 +1537,7 @@ function registerItems() {
     };
     ECHItems[game.i18n.localize("enhancedcombathud-black-flag.items.hide.name")] = {
         name: game.i18n.localize("enhancedcombathud-black-flag.items.hide.name"),
-        type: "feat",
+        type: "feature",
         img: "modules/enhancedcombathud/icons/cloak-dagger.webp",
         system: {
             type: {
@@ -1621,7 +1617,7 @@ function registerItems() {
     };
     ECHItems[game.i18n.localize("enhancedcombathud-black-flag.items.dash.name")] = {
         name: game.i18n.localize("enhancedcombathud-black-flag.items.dash.name"),
-        type: "feat",
+        type: "feature",
         img: "modules/enhancedcombathud/icons/walking-boot.webp",
         system: {
             type: {
@@ -1694,7 +1690,7 @@ function registerItems() {
     };
     ECHItems[game.i18n.localize("enhancedcombathud-black-flag.items.shove.name")] = {
         name: game.i18n.localize("enhancedcombathud-black-flag.items.shove.name"),
-        type: "feat",
+        type: "feature",
         img: "modules/enhancedcombathud/icons/shield-bash.webp",
         system: {
             type: {
