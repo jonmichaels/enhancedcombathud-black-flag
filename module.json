@@ -1,0 +1,58 @@
+{
+    "title": "Argon - Combat HUD (BLACKFLAG)",
+    "description": "Tales of the Valiant (ToV) / Black Flag system integration for Argon Combat HUD. Ported from the D&D 5E plugin. Requires enhancedcombathud (CORE).",
+    "id": "enhancedcombathud-blackflag",
+    "version": "1.0.0",
+    "authors": [
+        {
+            "name": "theripper93",
+            "email": "tsplab@gmail.com",
+            "url": "https://www.patreon.com/theripper93"
+        },
+        {
+            "name": "hermes90201",
+            "url": "https://github.com/jonmichaels/enhancedcombathud-blackflag"
+        }
+    ],
+    "languages": [
+        {
+            "lang": "en",
+            "name": "English",
+            "path": "languages/en.json"
+        }
+    ],
+    "esmodules": [
+        "index.js"
+    ],
+    "styles": [
+        "styles/module.css"
+    ],
+    "packs": [],
+    "url": "https://github.com/jonmichaels/enhancedcombathud-blackflag",
+    "manifest": "https://github.com/jonmichaels/enhancedcombathud-blackflag/releases/latest/download/module.json",
+    "download": "https://github.com/jonmichaels/enhancedcombathud-blackflag/releases/download/1.0.0/module.zip",
+    "relationships": {
+        "requires": [
+            {
+                "id": "enhancedcombathud",
+                "type": "module",
+                "compatibility": {
+                    "minimum": "3.0.4"
+                }
+            }
+        ],
+        "systems": [
+            {
+                "id": "black-flag",
+                "type": "system",
+                "compatibility": {
+                    "minimum": "2.0.0"
+                }
+            }
+        ]
+    },
+    "compatibility": {
+        "minimum": "13",
+        "verified": "13"
+    }
+}
