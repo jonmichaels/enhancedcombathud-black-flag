@@ -1150,7 +1150,7 @@ export function initConfig() {
                 } else {
                     success = this.actorItem ? await this.activity.use({ event }, { event }) : await this.createChatMessage();
                     if(this.statusId) {
-                        const status = CONFIG.statusEffects.find(e => e._id === this.statusId);
+                        const status = CONFIG.statusEffects.find(e => e.id === this.statusId || e._id === this.statusId);
                         if(status) this.actor.toggleStatusEffect(status.id);
                     }
                 }
@@ -1448,7 +1448,7 @@ function registerItems() {
         sort: 0,
         flags: {
             statusId: {
-                id: "blackFlagDodging",
+                        id: "dodging",
             },
             "midi-qol": {
                 onUseMacroName: "",
@@ -1601,7 +1601,7 @@ function registerItems() {
         sort: 0,
         flags: {
             statusId: {
-                id: "blackFlagHiding",
+                        id: "hiding",
             },
             "midi-qol": {
                 onUseMacroName: "",
