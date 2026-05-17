@@ -117,10 +117,10 @@ export function initConfig() {
 
             if (type == "skill") {
                 title = CONFIG.BlackFlag.skills[item].label;
-                description = game.i18n.localize(`enhancedcombathud-blackflag.skills.${item}.tooltip`);
+                description = game.i18n.localize(`enhancedcombathud-black-flag.skills.${item}.tooltip`);
             } else if (type == "save") {
                 title = CONFIG.BlackFlag.abilities[item].label;
-                description = game.i18n.localize(`enhancedcombathud-blackflag.abilities.${item}.tooltip`);
+                description = game.i18n.localize(`enhancedcombathud-black-flag.abilities.${item}.tooltip`);
             } else {
                 if (!item || !item.system) return;
 
@@ -173,18 +173,18 @@ export function initConfig() {
             if (target || range) {
                 details = [
                     {
-                        label: "enhancedcombathud-blackflag.tooltip.target.name",
+                        label: "enhancedcombathud-black-flag.tooltip.target.name",
                         value: target,
                     },
                     {
-                        label: "enhancedcombathud-blackflag.tooltip.range.name",
+                        label: "enhancedcombathud-black-flag.tooltip.range.name",
                         value: range,
                     },
                 ];
             }
             if (item?.labels?.toHit) {
                 details.push({
-                    label: "enhancedcombathud-blackflag.tooltip.toHit.name",
+                    label: "enhancedcombathud-black-flag.tooltip.toHit.name",
                     value: item.labels.toHit,
                 });
             }
@@ -194,7 +194,7 @@ export function initConfig() {
                     dmgString += dDmg.formula + " " + getDamageTypeIcon(dDmg.damageType) + " ";
                 });
                 details.push({
-                    label: "enhancedcombathud-blackflag.tooltip.damage.name",
+                    label: "enhancedcombathud-black-flag.tooltip.damage.name",
                     value: dmgString,
                 });
             }
@@ -315,7 +315,7 @@ export function initConfig() {
             }
 
             get configurationTemplate() {
-                return "modules/enhancedcombathud-blackflag/templates/argon-actor-config.hbs";
+                return "modules/enhancedcombathud-black-flag/templates/argon-actor-config.hbs";
             }
 
             async _onDeathSave(event) {
@@ -517,7 +517,7 @@ export function initConfig() {
                         gridCols: "7fr 2fr",
                         captions: [
                             {
-                                label: game.i18n.localize("enhancedcombathud-blackflag.hud.tools.name"),
+                                label: game.i18n.localize("enhancedcombathud-black-flag.hud.tools.name"),
                             },
                             {
                                 label: "",
@@ -529,7 +529,7 @@ export function initConfig() {
             }
 
             get title() {
-                return `${game.i18n.localize("enhancedcombathud-blackflag.hud.saves.name")} / ${game.i18n.localize("enhancedcombathud-blackflag.hud.skills.name")} / ${game.i18n.localize("enhancedcombathud-blackflag.hud.tools.name")}`;
+                return `${game.i18n.localize("enhancedcombathud-black-flag.hud.saves.name")} / ${game.i18n.localize("enhancedcombathud-black-flag.hud.skills.name")} / ${game.i18n.localize("enhancedcombathud-black-flag.hud.tools.name")}`;
             }
         }
 
@@ -867,7 +867,7 @@ export function initConfig() {
 
             async getTooltipData() {
                 const tooltipData = this.isActivity ? await getTooltipDetails({...this.item, ...this.activity, name: this.label}) : await getTooltipDetails(this.item);
-                tooltipData.propertiesLabel = "enhancedcombathud-blackflag.tooltip.properties.name";
+                tooltipData.propertiesLabel = "enhancedcombathud-black-flag.tooltip.properties.name";
                 return tooltipData;
             }
 
@@ -984,13 +984,13 @@ export function initConfig() {
             get label() {
                 switch (this.type) {
                     case "spell":
-                        return "enhancedcombathud-blackflag.hud.castspell.name";
+                        return "enhancedcombathud-black-flag.hud.castspell.name";
                     case "feat":
-                        return "enhancedcombathud-blackflag.hud.usepower.name";
+                        return "enhancedcombathud-black-flag.hud.usepower.name";
                     case "consumable":
-                        return "enhancedcombathud-blackflag.hud.useitem.name";
+                        return "enhancedcombathud-black-flag.hud.useitem.name";
                     case "weapon":
-                        return "enhancedcombathud-blackflag.hud.useitem.name";
+                        return "enhancedcombathud-black-flag.hud.useitem.name";
                 }
             }
 
@@ -1137,7 +1137,7 @@ export function initConfig() {
 
             async getTooltipData() {
                 const tooltipData = await getTooltipDetails(this.item);
-                tooltipData.propertiesLabel = "enhancedcombathud-blackflag.tooltip.properties.name";
+                tooltipData.propertiesLabel = "enhancedcombathud-black-flag.tooltip.properties.name";
                 return tooltipData;
             }
 
@@ -1266,7 +1266,7 @@ export function initConfig() {
             }
 
             async _onSetChange({ sets, active }) {
-                const switchEquip = game.settings.get("enhancedcombathud-blackflag", "switchEquip");
+                const switchEquip = game.settings.get("enhancedcombathud-black-flag", "switchEquip");
                 if (!switchEquip) return;
                 const updates = [];
                 const activeSet = sets[active];
@@ -1304,8 +1304,8 @@ export function initConfig() {
 }
 
 function registerItems() {
-    ECHItems[game.i18n.localize("enhancedcombathud-blackflag.items.disengage.name")] = {
-        name: game.i18n.localize("enhancedcombathud-blackflag.items.disengage.name"),
+    ECHItems[game.i18n.localize("enhancedcombathud-black-flag.items.disengage.name")] = {
+        name: game.i18n.localize("enhancedcombathud-black-flag.items.disengage.name"),
         type: "feat",
         img: "modules/enhancedcombathud/icons/journey.webp",
         system: {
@@ -1314,7 +1314,7 @@ function registerItems() {
                 subtype: "",
             },
             description: {
-                value: game.i18n.localize("enhancedcombathud-blackflag.items.disengage.desc"),
+                value: game.i18n.localize("enhancedcombathud-black-flag.items.disengage.desc"),
                 chat: "",
                 unidentified: "",
             },
@@ -1379,8 +1379,8 @@ function registerItems() {
             },
         },
     };
-    ECHItems[game.i18n.localize("enhancedcombathud-blackflag.items.dodge.name")] = {
-        name: game.i18n.localize("enhancedcombathud-blackflag.items.dodge.name"),
+    ECHItems[game.i18n.localize("enhancedcombathud-black-flag.items.dodge.name")] = {
+        name: game.i18n.localize("enhancedcombathud-black-flag.items.dodge.name"),
         type: "feat",
         img: "modules/enhancedcombathud/icons/armor-upgrade.webp",
         system: {
@@ -1389,7 +1389,7 @@ function registerItems() {
                 subtype: "",
             },
             description: {
-                value: game.i18n.localize("enhancedcombathud-blackflag.items.dodge.desc"),
+                value: game.i18n.localize("enhancedcombathud-black-flag.items.dodge.desc"),
                 chat: "",
                 unidentified: "",
             },
@@ -1455,8 +1455,8 @@ function registerItems() {
             },
         },
     };
-    ECHItems[game.i18n.localize("enhancedcombathud-blackflag.items.ready.name")] = {
-        name: game.i18n.localize("enhancedcombathud-blackflag.items.ready.name"),
+    ECHItems[game.i18n.localize("enhancedcombathud-black-flag.items.ready.name")] = {
+        name: game.i18n.localize("enhancedcombathud-black-flag.items.ready.name"),
         type: "feat",
         img: "modules/enhancedcombathud/icons/clockwork.webp",
         system: {
@@ -1465,7 +1465,7 @@ function registerItems() {
                 subtype: "",
             },
             description: {
-                value: game.i18n.localize("enhancedcombathud-blackflag.items.ready.desc"),
+                value: game.i18n.localize("enhancedcombathud-black-flag.items.ready.desc"),
                 chat: "",
                 unidentified: "",
             },
@@ -1528,8 +1528,8 @@ function registerItems() {
             },
         },
     };
-    ECHItems[game.i18n.localize("enhancedcombathud-blackflag.items.hide.name")] = {
-        name: game.i18n.localize("enhancedcombathud-blackflag.items.hide.name"),
+    ECHItems[game.i18n.localize("enhancedcombathud-black-flag.items.hide.name")] = {
+        name: game.i18n.localize("enhancedcombathud-black-flag.items.hide.name"),
         type: "feat",
         img: "modules/enhancedcombathud/icons/cloak-dagger.webp",
         system: {
@@ -1538,7 +1538,7 @@ function registerItems() {
                 subtype: "",
             },
             description: {
-                value: game.i18n.localize("enhancedcombathud-blackflag.items.hide.desc"),
+                value: game.i18n.localize("enhancedcombathud-black-flag.items.hide.desc"),
                 chat: "",
                 unidentified: "",
             },
@@ -1608,8 +1608,8 @@ function registerItems() {
             },
         },
     };
-    ECHItems[game.i18n.localize("enhancedcombathud-blackflag.items.dash.name")] = {
-        name: game.i18n.localize("enhancedcombathud-blackflag.items.dash.name"),
+    ECHItems[game.i18n.localize("enhancedcombathud-black-flag.items.dash.name")] = {
+        name: game.i18n.localize("enhancedcombathud-black-flag.items.dash.name"),
         type: "feat",
         img: "modules/enhancedcombathud/icons/walking-boot.webp",
         system: {
@@ -1618,7 +1618,7 @@ function registerItems() {
                 subtype: "",
             },
             description: {
-                value: game.i18n.localize("enhancedcombathud-blackflag.items.dash.desc"),
+                value: game.i18n.localize("enhancedcombathud-black-flag.items.dash.desc"),
                 chat: "",
                 unidentified: "",
             },
@@ -1681,8 +1681,8 @@ function registerItems() {
             },
         },
     };
-    ECHItems[game.i18n.localize("enhancedcombathud-blackflag.items.shove.name")] = {
-        name: game.i18n.localize("enhancedcombathud-blackflag.items.shove.name"),
+    ECHItems[game.i18n.localize("enhancedcombathud-black-flag.items.shove.name")] = {
+        name: game.i18n.localize("enhancedcombathud-black-flag.items.shove.name"),
         type: "feat",
         img: "modules/enhancedcombathud/icons/shield-bash.webp",
         system: {
@@ -1691,7 +1691,7 @@ function registerItems() {
                 subtype: "",
             },
             description: {
-                value: game.i18n.localize("enhancedcombathud-blackflag.items.shove.desc"),
+                value: game.i18n.localize("enhancedcombathud-black-flag.items.shove.desc"),
                 chat: "",
                 unidentified: "",
             },
