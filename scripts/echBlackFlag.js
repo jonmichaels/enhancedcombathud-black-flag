@@ -71,10 +71,9 @@ export function initConfig() {
         }
 
         const getActivationType = (item) => {
-            if (!item?.system?.activities) {
-                return;
-            }
-            return Array.from(item.system.activities)[0]?.activation?.type;
+            const activities = Array.from(item?.system?.activities ?? []);
+            const primaryActivity = activities.find((activity) => activity.activation?.primary) ?? activities[0];
+            return primaryActivity?.activation?.type ?? item?.system?.casting?.type;
         };
 
         const getActionType = (item) => {
@@ -1104,8 +1103,10 @@ export function initConfig() {
                         },
                     },
                 ];
+                const spellRelationshipMode = (item) => item.getFlag('black-flag', 'relationship.mode');
+                const isStandardLeveledSpell = (item) => !spellRelationshipMode(item) || spellRelationshipMode(item) === "spell";
                 for (const [level, label] of Object.entries(spellLevels)) {
-                    const levelSpells = this.items.filter((item) => item.system?.circle?.base == level && item.getFlag('black-flag', 'relationship.mode') === "spell");
+                    const levelSpells = this.items.filter((item) => item.system?.circle?.base == level && isStandardLeveledSpell(item));
                     if (!levelSpells.length || level == 0) continue;
                     spells.push({
                         label,
