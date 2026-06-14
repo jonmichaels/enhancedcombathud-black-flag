@@ -3,6 +3,35 @@ import { getSetting } from "./settings.js";
 
 const ECHItems = {};
 
+const fallbackLabel = (...values) => values.find((value) => value !== undefined && value !== null && value !== "") ?? "-";
+
+export function getSpellCircleSchoolSubtitle(item) {
+    const blackFlagConfig = globalThis.CONFIG?.BlackFlag;
+    const circle = item?.system?.circle?.base ?? item?.system?.circle?.value;
+    const circleLabels = blackFlagConfig?.spellCircles?.({ dashed: true }) ?? blackFlagConfig?.spellCircles?.() ?? {};
+    const circleLabel = fallbackLabel(circleLabels[circle], item?.labels?.level);
+    const schoolLabel = fallbackLabel(blackFlagConfig?.spellSchools?.localized?.[item?.system?.school], item?.labels?.school);
+    return [circleLabel, schoolLabel].filter((part) => part && part !== "-").join(" ") || "-";
+}
+
+export function getSpellTargetLabel(item) {
+    return fallbackLabel(
+        item?.system?.target?.label,
+        item?.system?.target?.affects?.labels?.sheet,
+        item?.system?.target?.template?.label,
+        item?.labels?.target
+    );
+}
+
+export function getSpellRangeLabel(item) {
+    const rangeLabel = fallbackLabel(item?.system?.range?.label, item?.labels?.range);
+    const templateLabel = item?.system?.target?.template?.label;
+    if (item?.system?.range?.unit === "self" && templateLabel && !String(rangeLabel).includes(String(templateLabel))) {
+        return `${rangeLabel} (${templateLabel})`;
+    }
+    return rangeLabel;
+}
+
 let explodeItemActivities;
 export function setExplodeItemActivities() {
     explodeItemActivities = getSetting("explodeItemActivities");
@@ -130,8 +159,8 @@ export function initConfig() {
                 title = item.name;
                 description = item.system.identified ? item.system.description.value : item.system.description.unidentified ?? item.system.description.value;
                 itemType = item.type;
-                target = item.labels?.target || "-";
-                range = item.labels?.range || "-";
+                target = item.type === "spell" ? getSpellTargetLabel(item) : (item.labels?.target || "-");
+                range = item.type === "spell" ? getSpellRangeLabel(item) : (item.labels?.range || "-");
                 properties = [];
                 let property;
                 dt = item?.labels?.damages?.map(d => d.damageType);
@@ -149,7 +178,7 @@ export function initConfig() {
                         }
                         break;
                     case "spell":
-                        subtitle = `${item.labels?.level ?? "?"} ${item.labels?.school ?? "?"}`;
+                        subtitle = getSpellCircleSchoolSubtitle(item);
                         properties.push(CONFIG.BlackFlag.spellSchools.localized[item.system.school]);
                         if (item.labels?.duration) properties.push(item.labels.duration);
                         if (item.labels?.save) properties.push(item.labels.save);

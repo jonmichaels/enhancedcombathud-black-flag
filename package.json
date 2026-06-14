@@ -23,6 +23,7 @@
     "init": "npm install && node init-project.js && npx webpack --config webpack.config.js --watch",
     "create": "node createApp.js",
     "build": "npx webpack --config webpack.config.js --mode production",
+    "test": "node tests/tooltip-helpers.test.cjs",
     "watch": "npx webpack --config webpack.config.js --watch"
   }
 }
