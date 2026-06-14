@@ -2,7 +2,7 @@
 
 > **⚠️ Disclaimer:** This module was created by an AI coding agent (Hephaestus, via Hermes Agent) under the direction of Jon Michaels. While tested and functional, users should verify behavior in their own games before relying on it in critical sessions.
 
-[![Foundry VTT](https://img.shields.io/badge/Foundry-v13-orange)](https://foundryvtt.com)
+[![Foundry VTT](https://img.shields.io/badge/Foundry-v13--v14-orange)](https://foundryvtt.com)
 [![Black Flag](https://img.shields.io/badge/System-Black%20Flag%20%2F%20ToV-blue)](https://github.com/koboldpress/black-flag)
 [![Version](https://img.shields.io/badge/Version-1.0.0-green)](https://github.com/jonmichaels/enhancedcombathud-black-flag/releases)
 
@@ -31,9 +31,9 @@ Download the latest release zip and extract to `Data/modules/enhancedcombathud-b
 
 ## Requirements
 
-- **Foundry VTT** v13+
-- **Argon - Combat HUD (CORE)** (`enhancedcombathud`) v3.0.4+
-- **Black Flag Roleplaying** (Tales of the Valiant) system v2.0+
+- **Foundry VTT** v13–v14
+- **Argon - Combat HUD (CORE)** (`enhancedcombathud`) v3.0.4+ (v5.0.1 verified on Foundry v14)
+- **Black Flag Roleplaying** (Tales of the Valiant) system v2.0+ (v3.0.075 verified on Foundry v14)
 
 ## How It Works
 

@@ -182,4 +182,17 @@ assert.deepStrictEqual(normalize(context.getTooltipDamageParts(spellAttackItem))
   { formula: "2d10", damageType: "radiant" },
 ]);
 
+const manifest = JSON.parse(fs.readFileSync("module.json", "utf8"));
+assert.strictEqual(manifest.compatibility.minimum, "13");
+assert.strictEqual(manifest.compatibility.verified, "14");
+assert.strictEqual(manifest.compatibility.maximum, "14");
+assert.strictEqual(
+  manifest.relationships.requires.find((relationship) => relationship.id === "enhancedcombathud").compatibility.verified,
+  "5.0.1"
+);
+assert.strictEqual(
+  manifest.relationships.systems.find((relationship) => relationship.id === "black-flag").compatibility.verified,
+  "3.0.075"
+);
+
 console.log("tooltip helper tests passed");

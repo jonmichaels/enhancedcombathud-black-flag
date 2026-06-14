@@ -6,12 +6,13 @@
 - Ported from the Argon / D&D 5E integration and adapted to Black Flag's item, activity, spell, and actor data models.
 
 ## Runtime Targets
-- Current `module.json` target: Foundry v13 minimum / v13 verified, Black Flag v2 minimum.
-- Current compatibility work: Foundry v13 + Black Flag v2 runtime testing on the local development server at port 30000.
+- Current `module.json` target: Foundry v13 minimum / v14 verified, Black Flag v2 minimum / v3 verified.
+- Current compatibility work: Foundry v14 + Black Flag v3 runtime testing on the local development server; v13 + Black Flag v2 remains supported by the source compatibility paths.
 - Local project: `/home/jon/projects/enhancedcombathud-black-flag`.
 - v13 module symlink: `/home/jon/foundryuserdata/Data/modules/enhancedcombathud-black-flag -> /home/jon/projects/enhancedcombathud-black-flag`.
-- Required dependency module: `enhancedcombathud` version 3.0.4+.
-- Use the locally configured Foundry v13 development server/session from the active environment. Do not commit private Foundry hostnames, URLs, credentials, or world-specific data.
+- v14 module symlink: `/home/jon/foundryuserdata14/Data/modules/enhancedcombathud-black-flag -> /home/jon/projects/enhancedcombathud-black-flag`.
+- Required dependency module: `enhancedcombathud` version 3.0.4+; v14 testing uses Argon / enhancedcombathud 5.0.1.
+- Use the locally configured Foundry v13/v14 development server/session from the active environment. Do not commit private Foundry hostnames, URLs, credentials, or world-specific data.
 
 ## Build / Packaging
 - Source entry: `scripts/main.js`.
@@ -80,7 +81,7 @@
 - Follow the global Foundry rule: reference before intuition. Inspect live Black Flag actor/item data before changing data-model logic.
 - Prefer focused compatibility fixes over broad refactors.
 - After changing source, run `npm run build` so `index.js`, `index.js.map`, and `styles/module.css` reflect the source.
-- Verify with live Foundry v13 / Black Flag v2 when the change affects runtime behavior.
+- Verify with live Foundry v13 / Black Flag v2 and/or Foundry v14 / Black Flag v3 when the change affects runtime behavior.
 - Commit and push every meaningful change using git identity `hermes90201`.
 
 ## Known Pitfalls
