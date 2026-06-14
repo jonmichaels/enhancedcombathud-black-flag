@@ -15,18 +15,28 @@ export function getSpellCircleSchoolSubtitle(item) {
 }
 
 export function getSpellTargetLabel(item) {
+    const sourceItem = item?.item ?? item;
     return fallbackLabel(
+        item?.target?.label,
+        item?.target?.affects?.labels?.sheet,
+        item?.target?.template?.label,
         item?.system?.target?.label,
         item?.system?.target?.affects?.labels?.sheet,
         item?.system?.target?.template?.label,
-        item?.labels?.target
+        sourceItem?.system?.target?.label,
+        sourceItem?.system?.target?.affects?.labels?.sheet,
+        sourceItem?.system?.target?.template?.label,
+        sourceItem?.labels?.target
     );
 }
 
 export function getSpellRangeLabel(item) {
-    const rangeLabel = fallbackLabel(item?.system?.range?.label, item?.labels?.range);
-    const templateLabel = item?.system?.target?.template?.label;
-    if (item?.system?.range?.unit === "self" && templateLabel && !String(rangeLabel).includes(String(templateLabel))) {
+    const sourceItem = item?.item ?? item;
+    const range = item?.range ?? item?.system?.range ?? sourceItem?.system?.range;
+    const target = item?.target ?? item?.system?.target ?? sourceItem?.system?.target;
+    const rangeLabel = fallbackLabel(item?.range?.label, item?.system?.range?.label, sourceItem?.system?.range?.label, sourceItem?.labels?.range);
+    const templateLabel = target?.template?.label;
+    if (range?.unit === "self" && templateLabel && !String(rangeLabel).includes(String(templateLabel))) {
         return `${rangeLabel} (${templateLabel})`;
     }
     return rangeLabel;
@@ -40,24 +50,36 @@ const formatSigned = (value) => {
 };
 
 export function getTooltipToHitLabel(item) {
+    const sourceItem = item?.item ?? item;
     return fallbackLabel(
         item?.labels?.toHit,
         item?.toHit,
         formatSigned(item?.system?.toHit),
-        formatSigned(item?.system?.attack?.bonus)
+        formatSigned(item?.system?.attack?.bonus),
+        sourceItem?.labels?.toHit,
+        formatSigned(sourceItem?.system?.toHit),
+        formatSigned(sourceItem?.system?.attack?.bonus)
     );
 }
 
 export function getTooltipDamageParts(item) {
+    const sourceItem = item?.item ?? item;
     if (item?.labels?.damages?.length) return item.labels.damages;
 
     const parts = [];
-    const base = item?.item?.system?.damage?.base ?? item?.system?.damage?.base;
+    const base = sourceItem?.system?.damage?.base ?? item?.system?.damage?.base;
     const includeBase = item?.system?.damage?.includeBase;
     if (includeBase && base?.formula) parts.push(base);
 
     for (const part of item?.system?.damage?.parts ?? []) {
         if (part?.formula) parts.push(part);
+    }
+
+    if (!parts.length && sourceItem?.labels?.damages?.length) return sourceItem.labels.damages;
+    if (!parts.length) {
+        for (const part of sourceItem?.system?.damage?.parts ?? []) {
+            if (part?.formula) parts.push(part);
+        }
     }
 
     return parts.map((part) => ({
@@ -173,7 +195,8 @@ export function initConfig() {
 
         Hooks.callAll("enhanced-combat-hud.blackflag.initConfig", { actionTypes, itemTypes, ECHItems });
 
-        async function getTooltipDetails(item, type) {
+        async function getTooltipDetails(item, type, { name } = {}) {
+            const sourceItem = item?.item ?? item;
             let title, description, itemType, subtitle, target, range, dt;
             let damageTypes = [];
             let properties = [];
@@ -188,13 +211,13 @@ export function initConfig() {
                 const key = `enhancedcombathud-black-flag.abilities.${item}.tooltip`;
                 description = game.i18n.has(key) ? game.i18n.localize(key) : "";
             } else {
-                if (!item || !item.system) return;
+                if (!sourceItem || !sourceItem.system) return;
 
-                title = item.name;
-                description = item.system.identified ? item.system.description.value : item.system.description.unidentified ?? item.system.description.value;
-                itemType = item.type;
-                target = item.type === "spell" ? getSpellTargetLabel(item) : (item.labels?.target || "-");
-                range = item.type === "spell" ? getSpellRangeLabel(item) : (item.labels?.range || "-");
+                title = name ?? item.name ?? sourceItem.name;
+                description = sourceItem.system.identified ? sourceItem.system.description.value : sourceItem.system.description.unidentified ?? sourceItem.system.description.value;
+                itemType = sourceItem.type;
+                target = itemType === "spell" ? getSpellTargetLabel(item) : (item.target?.label || sourceItem.labels?.target || "-");
+                range = itemType === "spell" ? getSpellRangeLabel(item) : (item.range?.label || sourceItem.labels?.range || "-");
                 properties = [];
                 let property;
                 dt = getTooltipDamageParts(item).map(d => d.damageType);
@@ -203,26 +226,26 @@ export function initConfig() {
 
                 switch (itemType) {
                     case "weapon":
-                        subtitle = CONFIG.BlackFlag.weaponTypes.localized[item.system.type?.value];
+                        subtitle = CONFIG.BlackFlag.weaponTypes.localized[sourceItem.system.type?.value];
                         property = game.i18n.localize(`BF.ACTIVITY.Type.${getActionType(item)}`);
                         if (property) properties.push(property);
-                        for (const propName of item.system.properties) {
+                        for (const propName of sourceItem.system.properties) {
                             let prop = CONFIG.BlackFlag.weaponProperties.includes(propName) ? game.i18n.localize(`BF.WEAPON.Property.${propName}`) : undefined;
                             if (prop) properties.push(prop);
                         }
                         break;
                     case "spell":
-                        subtitle = getSpellCircleSchoolSubtitle(item);
-                        properties.push(CONFIG.BlackFlag.spellSchools.localized[item.system.school]);
-                        if (item.labels?.duration) properties.push(item.labels.duration);
-                        if (item.labels?.save) properties.push(item.labels.save);
-                        for (let comp of (item.labels?.components?.all ?? [])) {
+                        subtitle = getSpellCircleSchoolSubtitle(sourceItem);
+                        properties.push(CONFIG.BlackFlag.spellSchools.localized[sourceItem.system.school]);
+                        if (sourceItem.labels?.duration) properties.push(sourceItem.labels.duration);
+                        if (sourceItem.labels?.save) properties.push(sourceItem.labels.save);
+                        for (let comp of (sourceItem.labels?.components?.all ?? [])) {
                             properties.push(comp.abbr);
                         }
-                        if (item.labels?.materials) materialComponents = item.labels.materials;
+                        if (sourceItem.labels?.materials) materialComponents = sourceItem.labels.materials;
                         break;
                     case "consumable":
-                        subtitle = CONFIG.BlackFlag.consumableCategories.localized[item.system.type?.base];
+                        subtitle = CONFIG.BlackFlag.consumableCategories.localized[sourceItem.system.type?.base];
                         {
                             const actionType = getActionType(item);
                             if (actionType) {
@@ -246,7 +269,7 @@ export function initConfig() {
                 }
             }
 
-            if (description) description = await foundry.applications.ux.TextEditor.implementation.enrichHTML(description, { async: true, relativeTo: item });
+            if (description) description = await foundry.applications.ux.TextEditor.implementation.enrichHTML(description, { async: true, relativeTo: sourceItem });
             let details = [];
             if (target || range) {
                 details = [
@@ -954,7 +977,7 @@ export function initConfig() {
             }
 
             async getTooltipData() {
-                const tooltipData = this.isActivity ? await getTooltipDetails({...this.item, ...this.activity, name: this.label}) : await getTooltipDetails(this.item);
+                const tooltipData = this.isActivity ? await getTooltipDetails(this.activity, undefined, { name: this.label }) : await getTooltipDetails(this.item);
                 tooltipData.propertiesLabel = "enhancedcombathud-black-flag.tooltip.properties.name";
                 return tooltipData;
             }

@@ -61,7 +61,6 @@ assert.strictEqual(context.getSpellTargetLabel(legacyLabelsOnly), "Legacy Target
 assert.strictEqual(context.getSpellRangeLabel(legacyLabelsOnly), "Legacy Range");
 
 const activityWithDerivedCombatData = {
-  toHit: "+7",
   system: {
     damage: {
       parts: [
@@ -71,10 +70,12 @@ const activityWithDerivedCombatData = {
     },
   },
 };
+Object.defineProperty(activityWithDerivedCombatData, "toHit", { value: "+7", enumerable: false });
 
 const normalize = (value) => JSON.parse(JSON.stringify(value));
 
 assert.strictEqual(context.getTooltipToHitLabel(activityWithDerivedCombatData), "+7");
+assert.strictEqual(context.getTooltipToHitLabel({ ...activityWithDerivedCombatData }), "-");
 assert.deepStrictEqual(normalize(context.getTooltipDamageParts(activityWithDerivedCombatData)), [
   { formula: "2d6", damageType: "fire" },
   { formula: "1d8", damageType: "radiant" },
@@ -114,6 +115,31 @@ const itemLabelCombatData = {
 
 assert.strictEqual(context.getTooltipToHitLabel(itemLabelCombatData), "+9");
 assert.deepStrictEqual(normalize(context.getTooltipDamageParts(itemLabelCombatData)), [
+  { formula: "3d10", damageType: "necrotic" },
+]);
+
+const spellAttackActivity = {
+  range: { label: "120 feet", unit: "ft" },
+  target: { label: "One target", affects: { labels: { sheet: "One target" } } },
+  system: { damage: { parts: [{ formula: "4d6", type: "fire" }] } },
+  item: spell,
+};
+Object.defineProperty(spellAttackActivity, "toHit", { value: "+6", enumerable: false });
+
+assert.strictEqual(context.getSpellTargetLabel(spellAttackActivity), "One target");
+assert.strictEqual(context.getSpellRangeLabel(spellAttackActivity), "120 feet");
+assert.strictEqual(context.getTooltipToHitLabel(spellAttackActivity), "+6");
+assert.deepStrictEqual(normalize(context.getTooltipDamageParts(spellAttackActivity)), [
+  { formula: "4d6", damageType: "fire" },
+]);
+
+const activityWithParentLabelsOnly = {
+  system: { damage: { parts: [] } },
+  item: itemLabelCombatData,
+};
+
+assert.strictEqual(context.getTooltipToHitLabel(activityWithParentLabelsOnly), "+9");
+assert.deepStrictEqual(normalize(context.getTooltipDamageParts(activityWithParentLabelsOnly)), [
   { formula: "3d10", damageType: "necrotic" },
 ]);
 
