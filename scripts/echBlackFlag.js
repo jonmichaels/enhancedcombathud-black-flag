@@ -32,6 +32,40 @@ export function getSpellRangeLabel(item) {
     return rangeLabel;
 }
 
+const formatSigned = (value) => {
+    if (value === undefined || value === null || value === "") return null;
+    if (typeof value === "number") return value >= 0 ? `+${value}` : `${value}`;
+    const text = String(value);
+    return /^-/.test(text) || /^\+/.test(text) ? text : `+${text}`;
+};
+
+export function getTooltipToHitLabel(item) {
+    return fallbackLabel(
+        item?.labels?.toHit,
+        item?.toHit,
+        formatSigned(item?.system?.toHit),
+        formatSigned(item?.system?.attack?.bonus)
+    );
+}
+
+export function getTooltipDamageParts(item) {
+    if (item?.labels?.damages?.length) return item.labels.damages;
+
+    const parts = [];
+    const base = item?.item?.system?.damage?.base ?? item?.system?.damage?.base;
+    const includeBase = item?.system?.damage?.includeBase;
+    if (includeBase && base?.formula) parts.push(base);
+
+    for (const part of item?.system?.damage?.parts ?? []) {
+        if (part?.formula) parts.push(part);
+    }
+
+    return parts.map((part) => ({
+        formula: part.formula,
+        damageType: part.damageType ?? part.type ?? part.types?.[0]
+    }));
+}
+
 let explodeItemActivities;
 export function setExplodeItemActivities() {
     explodeItemActivities = getSetting("explodeItemActivities");
@@ -163,7 +197,7 @@ export function initConfig() {
                 range = item.type === "spell" ? getSpellRangeLabel(item) : (item.labels?.range || "-");
                 properties = [];
                 let property;
-                dt = item?.labels?.damages?.map(d => d.damageType);
+                dt = getTooltipDamageParts(item).map(d => d.damageType);
                 damageTypes = dt && dt.length ? dt : [];
                 materialComponents = "";
 
@@ -226,15 +260,17 @@ export function initConfig() {
                     },
                 ];
             }
-            if (item?.labels?.toHit) {
+            const toHit = getTooltipToHitLabel(item);
+            if (toHit !== "-") {
                 details.push({
                     label: "enhancedcombathud-black-flag.tooltip.toHit.name",
-                    value: item.labels?.toHit ?? "-",
+                    value: toHit,
                 });
             }
-            if (item?.labels?.damages?.length) {
+            const damages = getTooltipDamageParts(item);
+            if (damages.length) {
                 let dmgString = "";
-                (item.labels?.damages ?? []).forEach((dDmg) => {
+                damages.forEach((dDmg) => {
                     dmgString += dDmg.formula + " " + getDamageTypeIcon(dDmg.damageType) + " ";
                 });
                 details.push({

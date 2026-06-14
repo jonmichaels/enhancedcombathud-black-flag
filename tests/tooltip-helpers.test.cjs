@@ -4,12 +4,12 @@ const vm = require("vm");
 
 const source = fs.readFileSync("scripts/echBlackFlag.js", "utf8");
 const helperSource = source
-  .match(/const fallbackLabel[\s\S]*?export function getSpellRangeLabel[\s\S]*?\n}\n/)[0]
+  .match(/const fallbackLabel[\s\S]*?export function getTooltipDamageParts[\s\S]*?\n}\n/)[0]
   .replaceAll("export function", "function");
 
 const context = { globalThis: {} };
 vm.createContext(context);
-vm.runInContext(`${helperSource}\nthis.getSpellCircleSchoolSubtitle = getSpellCircleSchoolSubtitle;\nthis.getSpellTargetLabel = getSpellTargetLabel;\nthis.getSpellRangeLabel = getSpellRangeLabel;`, context);
+vm.runInContext(`${helperSource}\nthis.getSpellCircleSchoolSubtitle = getSpellCircleSchoolSubtitle;\nthis.getSpellTargetLabel = getSpellTargetLabel;\nthis.getSpellRangeLabel = getSpellRangeLabel;\nthis.getTooltipToHitLabel = getTooltipToHitLabel;\nthis.getTooltipDamageParts = getTooltipDamageParts;`, context);
 
 context.globalThis.CONFIG = {
   BlackFlag: {
@@ -59,5 +59,62 @@ const legacyLabelsOnly = {
 assert.strictEqual(context.getSpellCircleSchoolSubtitle(legacyLabelsOnly), "2nd Circle Illusion");
 assert.strictEqual(context.getSpellTargetLabel(legacyLabelsOnly), "Legacy Target");
 assert.strictEqual(context.getSpellRangeLabel(legacyLabelsOnly), "Legacy Range");
+
+const activityWithDerivedCombatData = {
+  toHit: "+7",
+  system: {
+    damage: {
+      parts: [
+        { formula: "2d6", type: "fire" },
+        { formula: "1d8", damageType: "radiant" },
+      ],
+    },
+  },
+};
+
+const normalize = (value) => JSON.parse(JSON.stringify(value));
+
+assert.strictEqual(context.getTooltipToHitLabel(activityWithDerivedCombatData), "+7");
+assert.deepStrictEqual(normalize(context.getTooltipDamageParts(activityWithDerivedCombatData)), [
+  { formula: "2d6", damageType: "fire" },
+  { formula: "1d8", damageType: "radiant" },
+]);
+
+const weaponAttackActivity = {
+  system: {
+    toHit: 5,
+    damage: {
+      includeBase: true,
+      parts: [{ formula: "1d4", type: "poison" }],
+    },
+  },
+  item: {
+    system: {
+      damage: { base: { formula: "1d8", type: "slashing" } },
+    },
+  },
+};
+
+assert.strictEqual(context.getTooltipToHitLabel(weaponAttackActivity), "+5");
+assert.deepStrictEqual(normalize(context.getTooltipDamageParts(weaponAttackActivity)), [
+  { formula: "1d8", damageType: "slashing" },
+  { formula: "1d4", damageType: "poison" },
+]);
+
+const itemLabelCombatData = {
+  labels: {
+    toHit: "+9",
+    damages: [{ formula: "3d10", damageType: "necrotic" }],
+  },
+  system: {
+    toHit: 1,
+    damage: { parts: [{ formula: "1d4", type: "fire" }] },
+  },
+};
+
+assert.strictEqual(context.getTooltipToHitLabel(itemLabelCombatData), "+9");
+assert.deepStrictEqual(normalize(context.getTooltipDamageParts(itemLabelCombatData)), [
+  { formula: "3d10", damageType: "necrotic" },
+]);
 
 console.log("tooltip helper tests passed");
