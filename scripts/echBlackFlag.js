@@ -49,43 +49,61 @@ const formatSigned = (value) => {
     return /^-/.test(text) || /^\+/.test(text) ? text : `+${text}`;
 };
 
-export function getTooltipToHitLabel(item) {
+const activityList = (item) => {
+    const activities = item?.system?.activities;
+    if (!activities) return [];
+    return Array.from(typeof activities.values === "function" ? activities.values() : activities);
+};
+
+const combatActivityCandidates = (item) => {
     const sourceItem = item?.item ?? item;
-    return fallbackLabel(
-        item?.labels?.toHit,
-        item?.toHit,
-        formatSigned(item?.system?.toHit),
-        formatSigned(item?.system?.attack?.bonus),
-        sourceItem?.labels?.toHit,
-        formatSigned(sourceItem?.system?.toHit),
-        formatSigned(sourceItem?.system?.attack?.bonus)
-    );
+    const candidates = [];
+    if (item) candidates.push(item);
+    for (const activity of activityList(sourceItem)) candidates.push(activity);
+    if (sourceItem && sourceItem !== item) candidates.push(sourceItem);
+    return candidates;
+};
+
+export function getTooltipToHitLabel(item) {
+    for (const candidate of combatActivityCandidates(item)) {
+        const toHit = fallbackLabel(
+            candidate?.labels?.toHit,
+            candidate?.toHit,
+            formatSigned(candidate?.system?.toHit),
+            formatSigned(candidate?.system?.attack?.bonus)
+        );
+        if (toHit !== "-") return toHit;
+    }
+    return "-";
 }
 
-export function getTooltipDamageParts(item) {
-    const sourceItem = item?.item ?? item;
-    if (item?.labels?.damages?.length) return item.labels.damages;
+const normalizeDamageParts = (parts) => parts.map((part) => ({
+    formula: part.formula,
+    damageType: part.damageType ?? part.type ?? part.types?.[0]
+}));
+
+const damagePartsFor = (candidate) => {
+    const sourceItem = candidate?.item ?? candidate;
+    if (candidate?.labels?.damages?.length) return candidate.labels.damages;
 
     const parts = [];
-    const base = sourceItem?.system?.damage?.base ?? item?.system?.damage?.base;
-    const includeBase = item?.system?.damage?.includeBase;
+    const base = sourceItem?.system?.damage?.base ?? candidate?.system?.damage?.base;
+    const includeBase = candidate?.system?.damage?.includeBase;
     if (includeBase && base?.formula) parts.push(base);
 
-    for (const part of item?.system?.damage?.parts ?? []) {
+    for (const part of candidate?.system?.damage?.parts ?? []) {
         if (part?.formula) parts.push(part);
     }
 
-    if (!parts.length && sourceItem?.labels?.damages?.length) return sourceItem.labels.damages;
-    if (!parts.length) {
-        for (const part of sourceItem?.system?.damage?.parts ?? []) {
-            if (part?.formula) parts.push(part);
-        }
-    }
+    return parts;
+};
 
-    return parts.map((part) => ({
-        formula: part.formula,
-        damageType: part.damageType ?? part.type ?? part.types?.[0]
-    }));
+export function getTooltipDamageParts(item) {
+    for (const candidate of combatActivityCandidates(item)) {
+        const parts = damagePartsFor(candidate);
+        if (parts.length) return normalizeDamageParts(parts);
+    }
+    return [];
 }
 
 let explodeItemActivities;

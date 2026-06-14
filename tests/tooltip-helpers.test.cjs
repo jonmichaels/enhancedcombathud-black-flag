@@ -143,4 +143,43 @@ assert.deepStrictEqual(normalize(context.getTooltipDamageParts(activityWithParen
   { formula: "3d10", damageType: "necrotic" },
 ]);
 
+const burningHandsSpellItem = {
+  type: "spell",
+  labels: {},
+  system: {
+    activities: new Map([
+      ["cast", { type: "cast", system: {} }],
+      ["save", {
+        type: "save",
+        system: { damage: { parts: [{ formula: "3d6", type: "fire" }] } },
+      }],
+    ]),
+  },
+};
+
+assert.deepStrictEqual(normalize(context.getTooltipDamageParts(burningHandsSpellItem)), [
+  { formula: "3d6", damageType: "fire" },
+]);
+
+const spellAttackItem = {
+  type: "spell",
+  labels: {},
+  system: {
+    activities: new Map([
+      ["attack", {
+        type: "attack",
+        system: {
+          attack: { bonus: 7 },
+          damage: { parts: [{ formula: "2d10", type: "radiant" }] },
+        },
+      }],
+    ]),
+  },
+};
+
+assert.strictEqual(context.getTooltipToHitLabel(spellAttackItem), "+7");
+assert.deepStrictEqual(normalize(context.getTooltipDamageParts(spellAttackItem)), [
+  { formula: "2d10", damageType: "radiant" },
+]);
+
 console.log("tooltip helper tests passed");
