@@ -9,7 +9,7 @@ const helperSource = source
 
 const context = { globalThis: {} };
 vm.createContext(context);
-vm.runInContext(`${helperSource}\nthis.getSpellCircleSchoolSubtitle = getSpellCircleSchoolSubtitle;\nthis.getSpellTargetLabel = getSpellTargetLabel;\nthis.getSpellRangeLabel = getSpellRangeLabel;\nthis.getTooltipToHitLabel = getTooltipToHitLabel;\nthis.getTooltipDamageParts = getTooltipDamageParts;`, context);
+vm.runInContext(`${helperSource}\nthis.getSpellCircleSchoolSubtitle = getSpellCircleSchoolSubtitle;\nthis.getSpellTargetLabel = getSpellTargetLabel;\nthis.getSpellRangeLabel = getSpellRangeLabel;\nthis.isStandardSpellMode = isStandardSpellMode;\nthis.isSpellPreparedForHud = isSpellPreparedForHud;\nthis.getTooltipToHitLabel = getTooltipToHitLabel;\nthis.getTooltipDamageParts = getTooltipDamageParts;`, context);
 
 context.globalThis.CONFIG = {
   BlackFlag: {
@@ -181,6 +181,21 @@ assert.strictEqual(context.getTooltipToHitLabel(spellAttackItem), "+7");
 assert.deepStrictEqual(normalize(context.getTooltipDamageParts(spellAttackItem)), [
   { formula: "2d10", damageType: "radiant" },
 ]);
+
+assert.strictEqual(context.isStandardSpellMode(undefined), true);
+assert.strictEqual(context.isStandardSpellMode("spell"), true);
+assert.strictEqual(context.isStandardSpellMode("standard"), true);
+assert.strictEqual(context.isStandardSpellMode("atWill"), false);
+
+const hudSpell = (mode, system = {}) => ({
+  system: { circle: { base: 1 }, ...system },
+  getFlag: (_scope, key) => key === "relationship.mode" ? mode : undefined,
+});
+assert.strictEqual(context.isSpellPreparedForHud(hudSpell("standard", { prepared: true })), true);
+assert.strictEqual(context.isSpellPreparedForHud(hudSpell("standard", { prepared: false })), false);
+assert.strictEqual(context.isSpellPreparedForHud(hudSpell("standard", {})), true);
+assert.strictEqual(context.isSpellPreparedForHud(hudSpell("atWill", { prepared: false })), true);
+assert.strictEqual(context.isSpellPreparedForHud(hudSpell("standard", { circle: { base: 0 }, prepared: false })), true);
 
 const manifest = JSON.parse(fs.readFileSync("module.json", "utf8"));
 assert.strictEqual(manifest.compatibility.minimum, "13");

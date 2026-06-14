@@ -64,6 +64,19 @@ const combatActivityCandidates = (item) => {
     return candidates;
 };
 
+
+export function isStandardSpellMode(mode) {
+    return !mode || mode === "spell" || mode === "standard";
+}
+
+export function isSpellPreparedForHud(item) {
+    const mode = item?.getFlag?.('black-flag', 'relationship.mode');
+    if (["atWill", "innate", "pact"].includes(mode)) return true;
+    if (item?.system?.circle?.base == 0) return true;
+    if (item?.system?.prepared === undefined) return true;
+    return item.system.prepared === true || item.system.prepared > 0;
+}
+
 export function getTooltipToHitLabel(item) {
     for (const candidate of combatActivityCandidates(item)) {
         const toHit = fallbackLabel(
@@ -1176,12 +1189,7 @@ export function initConfig() {
                 
                 this.items = this.items.filter((item) => !itemsToIgnore.includes(item));
                 if (this.showPreparedOnly) {
-                    const allowIfNotPrepared = ["atWill", "innate", "pact"];
-                    this.items = this.items.filter((item) => {
-                        if (allowIfNotPrepared.includes(item.getFlag('black-flag', 'relationship.mode'))) return true;
-                        if (item.system?.circle?.base == 0) return true;
-                        return item.system?.prepared > 0;
-                    });
+                    this.items = this.items.filter(isSpellPreparedForHud);
                 }
 
                 const spells = [
@@ -1210,7 +1218,7 @@ export function initConfig() {
                     },
                 ];
                 const spellRelationshipMode = (item) => item.getFlag('black-flag', 'relationship.mode');
-                const isStandardLeveledSpell = (item) => !spellRelationshipMode(item) || spellRelationshipMode(item) === "spell";
+                const isStandardLeveledSpell = (item) => isStandardSpellMode(spellRelationshipMode(item));
                 for (const [level, label] of Object.entries(spellLevels)) {
                     const levelSpells = this.items.filter((item) => item.system?.circle?.base == level && isStandardLeveledSpell(item));
                     if (!levelSpells.length || level == 0) continue;

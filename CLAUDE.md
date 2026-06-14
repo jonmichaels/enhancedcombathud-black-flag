@@ -67,8 +67,8 @@
 - Do not assume the first activity is the only meaningful activity unless live data proves it; multi-activity items are common in Black Flag.
 - Spell circle data is read from `item.system.circle.base`, where `0` is a cantrip and higher numbers are leveled spell circles.
 - Black Flag spell slot data is read from `actor.system.spellcasting.slots`, with leveled slots keyed as `circle-<level>` and pact slots keyed as `pact`.
-- Spell relationship mode may be stored in `item.getFlag("black-flag", "relationship.mode")`, but live Black Flag v2 data may omit this flag on ordinary prepared spells. Do not require the flag to be exactly `"spell"` for ordinary leveled spells unless live inspection proves it is always present.
-- Spell preparation state is currently checked with `item.system.prepared > 0`; verify live data before changing this because Black Flag versions may represent preparation differently.
+- Spell relationship mode may be stored in `item.getFlag("black-flag", "relationship.mode")`. Live Black Flag v2 data may omit this flag on ordinary prepared spells; live Black Flag v3 data may set ordinary spells to `"standard"`. Treat missing, `"spell"`, and `"standard"` as standard leveled spell modes.
+- Spell preparation state is exposed by the runtime getter `item.system.prepared`. BF v3 may not serialize this into raw item data, so HUD filtering must only exclude explicit `false`/`0` values; missing `prepared` should not hide leveled spells.
 
 ## Spell HUD Pitfalls
 - Cantrips can appear even when leveled spells do not because cantrips are grouped by `item.system.circle.base == 0` without requiring `relationship.mode === "spell"`.
