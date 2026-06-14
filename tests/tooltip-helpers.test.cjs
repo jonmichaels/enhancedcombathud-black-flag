@@ -186,13 +186,13 @@ const manifest = JSON.parse(fs.readFileSync("module.json", "utf8"));
 assert.strictEqual(manifest.compatibility.minimum, "13");
 assert.strictEqual(manifest.compatibility.verified, "14");
 assert.strictEqual(manifest.compatibility.maximum, "14");
-assert.strictEqual(
-  manifest.relationships.requires.find((relationship) => relationship.id === "enhancedcombathud").compatibility.verified,
-  "5.0.1"
-);
-assert.strictEqual(
-  manifest.relationships.systems.find((relationship) => relationship.id === "black-flag").compatibility.verified,
-  "3.0.075"
-);
+const argonCompatibility = manifest.relationships.requires.find((relationship) => relationship.id === "enhancedcombathud").compatibility;
+assert.strictEqual(argonCompatibility.minimum, "3.0.4");
+assert.strictEqual(argonCompatibility.verified, undefined);
+assert.strictEqual(argonCompatibility.maximum, undefined);
+const blackFlagCompatibility = manifest.relationships.systems.find((relationship) => relationship.id === "black-flag").compatibility;
+assert.strictEqual(blackFlagCompatibility.minimum, "2.0.0");
+assert.strictEqual(blackFlagCompatibility.verified, "3.0.075");
+assert.strictEqual(blackFlagCompatibility.maximum, undefined);
 
 console.log("tooltip helper tests passed");

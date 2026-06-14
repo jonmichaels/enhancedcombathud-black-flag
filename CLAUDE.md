@@ -11,7 +11,7 @@
 - Local project: `/home/jon/projects/enhancedcombathud-black-flag`.
 - v13 module symlink: `/home/jon/foundryuserdata/Data/modules/enhancedcombathud-black-flag -> /home/jon/projects/enhancedcombathud-black-flag`.
 - v14 module symlink: `/home/jon/foundryuserdata14/Data/modules/enhancedcombathud-black-flag -> /home/jon/projects/enhancedcombathud-black-flag`.
-- Required dependency module: `enhancedcombathud` version 3.0.4+; v14 testing uses Argon / enhancedcombathud 5.0.1.
+- Required dependency module: `enhancedcombathud` version 3.0.4+. Do not set Argon core 5 as the minimum: Foundry v13 / Black Flag v2 uses Argon core 4, while Foundry v14 / Black Flag v3 uses Argon core 5. `module.json` cannot express that version matrix, so keep the dependency minimum broad and verify the correct Argon major at runtime/testing.
 - Use the locally configured Foundry v13/v14 development server/session from the active environment. Do not commit private Foundry hostnames, URLs, credentials, or world-specific data.
 
 ## Build / Packaging

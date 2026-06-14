@@ -32,7 +32,7 @@ Download the latest release zip and extract to `Data/modules/enhancedcombathud-b
 ## Requirements
 
 - **Foundry VTT** v13–v14
-- **Argon - Combat HUD (CORE)** (`enhancedcombathud`) v3.0.4+ (v5.0.1 verified on Foundry v14)
+- **Argon - Combat HUD (CORE)** (`enhancedcombathud`) v3.0.4+; use the Argon major compatible with your Foundry/Black Flag stack (Argon 4 for Foundry v13 / BF v2, Argon 5 verified on Foundry v14 / BF v3)
 - **Black Flag Roleplaying** (Tales of the Valiant) system v2.0+ (v3.0.075 verified on Foundry v14)
 
 ## How It Works
