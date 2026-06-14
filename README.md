@@ -4,7 +4,7 @@
 
 [![Foundry VTT](https://img.shields.io/badge/Foundry-v13--v14-orange)](https://foundryvtt.com)
 [![Black Flag](https://img.shields.io/badge/System-Black%20Flag%20%2F%20ToV-blue)](https://github.com/koboldpress/black-flag)
-[![Version](https://img.shields.io/badge/Version-1.0.0-green)](https://github.com/jonmichaels/enhancedcombathud-black-flag/releases)
+[![Version](https://img.shields.io/badge/Version-v1.1-green)](https://github.com/jonmichaels/enhancedcombathud-black-flag/releases)
 
 System-specific plugin that adds Black Flag Roleplaying (Tales of the Valiant) support to the [Argon Combat HUD](https://github.com/theripper93/enhancedcombathud). Provides an action-oriented HUD overlay for both PCs and NPCs during combat.
 
@@ -56,6 +56,14 @@ NPCs display attacks and features automatically. PCs can drag weapons into quick
 | Switch Equipment | Off | Show an equipment switch button |
 | Show Special Actions | On | Show Disengage, Dodge, Ready, Dash, Hide, Shove |
 | Per-actor Spell Prep | Prepared Only | Which spells to show (Prepared Only / Auto / All) |
+
+
+## Release Notes
+
+### v1.1
+
+- Adds Foundry VTT v14 and Black Flag Roleplaying v3 compatibility.
+- Fixes Black Flag v3 spell grouping so spells of 1st circle and above appear in the Argon HUD instead of only cantrips.
 
 ## Credits
 
