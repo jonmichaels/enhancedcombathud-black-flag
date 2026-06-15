@@ -212,6 +212,7 @@ assert.strictEqual(blackFlagCompatibility.maximum, undefined);
 
 assert.match(source, /const rangeUnit = activity\?\.range\?\.unit \?\? activity\?\.range\?\.units;/);
 assert.match(source, /const templateUnit = activity\.target\?\.template\?\.unit \?\? activity\.target\?\.template\?\.units;/);
+assert.match(source, /get useTargetPicker\(\) \{\n\s+return false;\n\s+\}/);
 assert.match(source, /const used = await activity\?\.activate\?\.\(\{ event, legacy: false \}, \{ event \}\);/);
 assert.doesNotMatch(source, /this\.item\.use\(/);
 assert.doesNotMatch(source, /this\.activity\.use\(/);

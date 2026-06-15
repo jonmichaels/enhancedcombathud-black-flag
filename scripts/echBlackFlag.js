@@ -967,6 +967,10 @@ export function initConfig() {
                 return true;
             }
 
+            get useTargetPicker() {
+                return false;
+            }
+
             get ranges() {
                 const activity = this.activity;
                 const rangeUnit = activity?.range?.unit ?? activity?.range?.units;
