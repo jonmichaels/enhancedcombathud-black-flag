@@ -969,9 +969,10 @@ export function initConfig() {
 
             get ranges() {
                 const activity = this.activity;
-                const touchRange = activity.range.units == "touch" ? canvas?.scene?.grid?.distance : null;
+                const rangeUnit = activity?.range?.unit ?? activity?.range?.units;
+                const touchRange = rangeUnit == "touch" ? canvas?.scene?.grid?.distance : null;
                 return {
-                    normal: activity?.range?.value ?? touchRange,
+                    normal: activity?.range?.value ?? activity?.range?.short ?? touchRange,
                     long: activity?.range?.long ?? null,
                 };
             }
@@ -987,7 +988,8 @@ export function initConfig() {
                 const actionType = activity.actionType;
                 const affects = activity.target?.affects ?? {};
                 const targetType = affects.type;
-                if (!activity.target?.template?.units && validTargets.includes(targetType)) {
+                const templateUnit = activity.target?.template?.unit ?? activity.target?.template?.units;
+                if (!templateUnit && validTargets.includes(targetType)) {
                     return affects.count ?? 1;
                 } else if (validTargets.includes(targetType) && affects.count) {
                     return affects.count;
@@ -1014,13 +1016,11 @@ export function initConfig() {
             }
 
             async _onLeftClick(event) {
-                // ui.ARGON.interceptNextDialog(event.currentTarget);
-                // const used = await this.activity.use({event, legacy: false}, {event});
-                if(!this.isActivity) return this.item.use({event, legacy: false}, {event});
-                const used = await this.activity.use({event, legacy: false}, {event});
+                const activity = this.activity;
+                const used = await activity?.activate?.({ event, legacy: false }, { event });
                 if (used) {
-                    DND5eItemButton.consumeActionEconomy(this.activity);
-                    const useOtherItem = this.activity?.consumption?.targets?.find(t => t.type === "itemUses");
+                    DND5eItemButton.consumeActionEconomy(activity);
+                    const useOtherItem = activity?.consumption?.targets?.find(t => t.type === "itemUses");
                     if (useOtherItem) {
                         const otherItem = this.actor.items.get(useOtherItem.target);
                         const allConnectedItems = this.actor.items.filter(i => i.system.activities?.find(a => a.consumption?.targets?.find(t => t.type === "itemUses" && t.target === otherItem.id)));
@@ -1283,7 +1283,7 @@ export function initConfig() {
                     success = true;
                     await game.dfreds.effectInterface.toggleEffect({ effectName: this.label, overlay: false, uuids: [this.actor.uuid] });
                 } else {
-                    success = this.actorItem ? await this.activity.use({ event }, { event }) : await this.createChatMessage();
+                    success = this.actorItem ? await this.activity?.activate?.({ event }, { event }) : await this.createChatMessage();
                     if(this.statusId) {
                         const status = CONFIG.statusEffects.find(e => e.id === this.statusId || e._id === this.statusId);
                         if(status) this.actor.toggleStatusEffect(status.id);

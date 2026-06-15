@@ -210,4 +210,10 @@ assert.strictEqual(blackFlagCompatibility.minimum, "2.0.0");
 assert.strictEqual(blackFlagCompatibility.verified, "3.0.075");
 assert.strictEqual(blackFlagCompatibility.maximum, undefined);
 
+assert.match(source, /const rangeUnit = activity\?\.range\?\.unit \?\? activity\?\.range\?\.units;/);
+assert.match(source, /const templateUnit = activity\.target\?\.template\?\.unit \?\? activity\.target\?\.template\?\.units;/);
+assert.match(source, /const used = await activity\?\.activate\?\.\(\{ event, legacy: false \}, \{ event \}\);/);
+assert.doesNotMatch(source, /this\.item\.use\(/);
+assert.doesNotMatch(source, /this\.activity\.use\(/);
+
 console.log("tooltip helper tests passed");
