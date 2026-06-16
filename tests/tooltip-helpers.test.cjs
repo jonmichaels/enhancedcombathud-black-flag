@@ -208,7 +208,7 @@ assert.strictEqual(missingSpellcastingUses.max, Infinity);
 const manifest = JSON.parse(fs.readFileSync("module.json", "utf8"));
 assert.strictEqual(manifest.compatibility.minimum, "13");
 assert.strictEqual(manifest.compatibility.verified, "14");
-assert.strictEqual(manifest.compatibility.maximum, "14");
+assert.strictEqual(manifest.compatibility.maximum, undefined);
 const argonCompatibility = manifest.relationships.requires.find((relationship) => relationship.id === "enhancedcombathud").compatibility;
 assert.strictEqual(argonCompatibility.minimum, "3.0.4");
 assert.strictEqual(argonCompatibility.verified, undefined);

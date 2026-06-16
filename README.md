@@ -4,7 +4,7 @@
 
 [![Foundry VTT](https://img.shields.io/badge/Foundry-v13--v14-orange)](https://foundryvtt.com)
 [![Black Flag](https://img.shields.io/badge/System-Black%20Flag%20%2F%20ToV-blue)](https://github.com/koboldpress/black-flag)
-[![Version](https://img.shields.io/badge/Version-v1.1-green)](https://github.com/jonmichaels/enhancedcombathud-black-flag/releases)
+[![Version](https://img.shields.io/badge/Version-v1.2-green)](https://github.com/jonmichaels/enhancedcombathud-black-flag/releases)
 
 System-specific plugin that adds Black Flag Roleplaying (Tales of the Valiant) support to the [Argon Combat HUD](https://github.com/theripper93/enhancedcombathud). Provides an action-oriented HUD overlay for both PCs and NPCs during combat.
 
@@ -13,7 +13,7 @@ System-specific plugin that adds Black Flag Roleplaying (Tales of the Valiant) s
 - **PC HUD** — Portrait, HP/AC, spell save DC, long/short rest, weapon attacks, class features, bonus actions, and reactions
 - **NPC HUD** — Portrait with challenge rating and creature type, HP/AC, attacks, legendary/lair actions, and special actions (Disengage, Dodge, Ready, Dash, Hide, Shove)
 - **Drawer Panel** — Abilities with checks and saves, skills with passives, and tool proficiencies
-- **Spell Support** — Spellcasting with circle filtering, preparation mode awareness, and spell slot tracking
+- **Spell Support** — Spellcasting with circle filtering, preparation mode awareness, and spell slot/at-will fallback handling for PCs and NPCs
 - **Weapon Sets** — Toggleable weapon quick-access with primary/secondary hand support
 - **Configurable** — Per-actor spell preparation mode, show/hide weapons, class actions, and special actions via module settings
 
@@ -33,7 +33,7 @@ Download the latest release zip and extract to `Data/modules/enhancedcombathud-b
 
 - **Foundry VTT** v13–v14
 - **Argon - Combat HUD (CORE)** (`enhancedcombathud`) v3.0.4+; use the Argon major compatible with your Foundry/Black Flag stack (Argon 4 for Foundry v13 / BF v2, Argon 5 verified on Foundry v14 / BF v3)
-- **Black Flag Roleplaying** (Tales of the Valiant) system v2.0+ (v3.0.075 verified on Foundry v14)
+- **Black Flag Roleplaying** (Tales of the Valiant) system v2.0+ (v3.x verified on Foundry v14)
 
 ## How It Works
 
