@@ -57,14 +57,6 @@ NPCs display attacks and features automatically. PCs can drag weapons into quick
 | Show Special Actions | On | Show Disengage, Dodge, Ready, Dash, Hide, Shove |
 | Per-actor Spell Prep | Prepared Only | Which spells to show (Prepared Only / Auto / All) |
 
-
-## Release Notes
-
-### v1.1
-
-- Adds Foundry VTT v14 and Black Flag Roleplaying v3 compatibility.
-- Fixes Black Flag v3 spell grouping so spells of 1st circle and above appear in the Argon HUD instead of only cantrips.
-
 ## Credits
 
 This module is a Black Flag / Tales of the Valiant port of the Argon Combat HUD D&D 5E plugin.
