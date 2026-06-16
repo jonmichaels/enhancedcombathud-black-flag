@@ -77,6 +77,11 @@ export function isSpellPreparedForHud(item) {
     return item.system.prepared === true || item.system.prepared > 0;
 }
 
+export function getSpellSlotUses(actor, slotKey) {
+    const slots = actor?.system?.spellcasting?.slots;
+    return slots?.[slotKey] ?? { max: Infinity, value: Infinity };
+}
+
 export function getTooltipToHitLabel(item) {
     for (const candidate of combatActivityCandidates(item)) {
         const toHit = fallbackLabel(
@@ -1217,7 +1222,7 @@ export function initConfig() {
                         label: "Pact Magic",
                         buttons: this.items.filter((item) => item.getFlag('black-flag', 'relationship.mode') === "pact").map((item) => new DND5eItemButton({ item })),
                         uses: () => {
-                            return this.actor.system.spellcasting.slots.pact;
+                            return getSpellSlotUses(this.actor, "pact");
                         },
                     },
                 ];
@@ -1230,7 +1235,7 @@ export function initConfig() {
                         label,
                         buttons: levelSpells.map((item) => new DND5eItemButton({ item })),
                         uses: () => {
-                            return this.actor.system.spellcasting.slots[`circle-${level}`];
+                            return getSpellSlotUses(this.actor, `circle-${level}`);
                         },
                     });
                 }
